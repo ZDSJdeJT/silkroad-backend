@@ -35,10 +35,6 @@ func main() {
 	switch env {
 	case "production":
 		envFile = ".env.production"
-	case "testing":
-		envFile = ".env.testing"
-		app.Use(cors.New())
-		app.Get("/swagger/*", swagger.HandlerDefault)
 	default:
 		envFile = ".env.development"
 		app.Use(cors.New())
@@ -63,7 +59,16 @@ func main() {
 		URL:  "/favicon.ico",
 	}))
 
-	app.Get("/", Hello)
+	app.Get("/hello", Hello)
+
+	app.Static("/", "client")
+	app.Get("*", func(c *fiber.Ctx) error {
+		err := c.SendFile("client/index.html")
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -83,7 +88,7 @@ func main() {
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Router / [get]
+// @Router /hello [get]
 func Hello(c *fiber.Ctx) error {
 	res := map[string]interface{}{
 		"data": "silkroad",
