@@ -22,9 +22,6 @@ go.work
 
 # .env files
 .env.production
-.env.testing
 .env.development
 
 vendor/
-
-docs/

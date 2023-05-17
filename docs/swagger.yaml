@@ -1,0 +1,26 @@
+basePath: /api
+info:
+  contact: {}
+  description: This is a simple server.
+  title: Swagger
+  version: "2.0"
+paths:
+  /v1/hello:
+    get:
+      consumes:
+      - '*/*'
+      description: A test function.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Test function.
+      tags:
+      - test
+schemes:
+- http
+swagger: "2.0"

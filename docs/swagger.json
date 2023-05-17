@@ -1,0 +1,39 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a simple server.",
+        "title": "Swagger",
+        "contact": {},
+        "version": "2.0"
+    },
+    "basePath": "/api",
+    "paths": {
+        "/v1/hello": {
+            "get": {
+                "description": "A test function.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "test"
+                ],
+                "summary": "Test function.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

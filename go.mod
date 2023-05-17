@@ -1,4 +1,4 @@
-module backend
+module silkroad-backend
 
 go 1.20
 
