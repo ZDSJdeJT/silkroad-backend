@@ -4,34 +4,134 @@
     ],
     "swagger": "2.0",
     "info": {
-        "description": "This is a simple server.",
-        "title": "Swagger",
+        "description": "The API doc of Silk Road.",
+        "title": "Silk Road",
         "contact": {},
-        "version": "2.0"
+        "version": "1.0.0"
     },
     "basePath": "/api",
     "paths": {
-        "/v1/hello": {
-            "get": {
-                "description": "A test function.",
+        "/v1/admin/options": {
+            "put": {
+                "description": "更新配置项信息",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "test"
+                    "配置项"
                 ],
-                "summary": "Test function.",
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                "summary": "更新配置项",
+                "parameters": [
+                    {
+                        "description": "配置项",
+                        "name": "option",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "object"
                         }
                     }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":{\"key\":\"WEBSITE_NAME\",\"value\":{\"data\":\"New Silk Road\"},\"label\":\"网站名称\",\"isPublic\":true,\"CreatedAt\":\"2023-05-21T15:29:42.6390127+08:00\",\"UpdatedAt\":\"2023-05-23T10:31:12.1234567+08:00\"}}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "{\"success\":false,\"message\":\"请求无效或参数错误\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "{\"success\":false,\"message\":\"未找到配置项\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/public-options": {
+            "get": {
+                "description": "获取公开的配置项信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "配置项"
+                ],
+                "summary": "获取公开的配置项",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":[{\"key\":\"WEBSITE_NAME\",\"value\":{\"data\":\"Silk Road\"},\"label\":\"网站名称\",\"isPublic\":true,\"CreatedAt\":\"2023-05-21T15:29:42.6390127+08:00\",\"UpdatedAt\":\"2023-05-21T15:29:42.6390127+08:00\"}, {...}]}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/system/info": {
+            "get": {
+                "description": "获取系统应用程序名称和版本号",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统信息"
+                ],
+                "summary": "获取系统信息",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"message\":\"Success\",\"result\":{\"appName\":\"GoApp\",\"appVersion\":\"1.0.0\"}}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",result:null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "utils.Response": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {},
+                "success": {
+                    "type": "boolean"
                 }
             }
         }

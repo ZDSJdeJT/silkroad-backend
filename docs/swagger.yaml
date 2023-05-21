@@ -1,26 +1,94 @@
 basePath: /api
+definitions:
+  utils.Response:
+    properties:
+      message:
+        type: string
+      result: {}
+      success:
+        type: boolean
+    type: object
 info:
   contact: {}
-  description: This is a simple server.
-  title: Swagger
-  version: "2.0"
+  description: The API doc of Silk Road.
+  title: Silk Road
+  version: 1.0.0
 paths:
-  /v1/hello:
-    get:
+  /v1/admin/options:
+    put:
       consumes:
-      - '*/*'
-      description: A test function.
+      - application/json
+      description: 更新配置项信息
+      parameters:
+      - description: 配置项
+        in: body
+        name: option
+        required: true
+        schema:
+          type: object
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: '{"success":true,"message":"成功","result":{"key":"WEBSITE_NAME","value":{"data":"New
+            Silk Road"},"label":"网站名称","isPublic":true,"CreatedAt":"2023-05-21T15:29:42.6390127+08:00","UpdatedAt":"2023-05-23T10:31:12.1234567+08:00"}}'
           schema:
-            additionalProperties: true
-            type: object
-      summary: Test function.
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: '{"success":false,"message":"请求无效或参数错误","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "404":
+          description: '{"success":false,"message":"未找到配置项","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 更新配置项
       tags:
-      - test
+      - 配置项
+  /v1/public-options:
+    get:
+      consumes:
+      - application/json
+      description: 获取公开的配置项信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"成功","result":[{"key":"WEBSITE_NAME","value":{"data":"Silk
+            Road"},"label":"网站名称","isPublic":true,"CreatedAt":"2023-05-21T15:29:42.6390127+08:00","UpdatedAt":"2023-05-21T15:29:42.6390127+08:00"},
+            {...}]}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 获取公开的配置项
+      tags:
+      - 配置项
+  /v1/system/info:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统应用程序名称和版本号
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"Success","result":{"appName":"GoApp","appVersion":"1.0.0"}}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！",result:null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 获取系统信息
+      tags:
+      - 系统信息
 schemes:
 - http
 swagger: "2.0"

@@ -6,9 +6,11 @@ import (
 )
 
 func APIRoutes(app *fiber.App) {
-	// Create routes group.
 	route := app.Group("/api/v1")
 
-	// Routes for GET method:
-	route.Get("/hello", controllers.Hello)
+	route.Get("/system/info", controllers.GetSystemInfo)
+
+	route.Get("/public-options", controllers.GetPublicOptions)
+
+	route.Put("/admin/options", controllers.UpdateOption)
 }
