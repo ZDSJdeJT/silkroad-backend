@@ -48,22 +48,30 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error loading .env.production file: %s.", err)
 		}
+		if _, err := utils.CheckEnvVarsExist([]string{"PORT", "APP_NAME", "APP_VERSION", "DATABASE_DSN"}); err != nil {
+			log.Fatalf("Error starting: %s.", err)
+		}
 		middlewares.FiberMiddlewares(app, false)
 	default:
 		err := godotenv.Load(".env.development")
 		if err != nil {
 			log.Fatalf("Error loading .env.development file: %s.", err)
 		}
+		if _, err := utils.CheckEnvVarsExist([]string{"PORT", "APP_NAME", "APP_VERSION", "DATABASE_DSN"}); err != nil {
+			log.Fatalf("Error starting: %s.", err)
+		}
 		middlewares.FiberMiddlewares(app, true)
 		routes.SwaggerRoutes(app)
 	}
 
-	if _, err := utils.CheckEnvVarsExist([]string{"PORT", "APP_NAME", "APP_VERSION", "DATABASE_DSN"}); err != nil {
-		log.Fatalf("Error starting: %s.", err)
-	}
-
 	if err := database.InitDatabase(); err != nil {
 		log.Fatalf("Error initing database: %s.", err)
+		return
+	}
+
+	err := utils.InitClientHTML()
+	if err != nil {
+		log.Fatalf("Error initing client HTML: %s.", err)
 		return
 	}
 

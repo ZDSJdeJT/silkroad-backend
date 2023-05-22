@@ -1,1 +1,0 @@
-import{_ as n,o as e,c as r}from"./index-10b0a162.js";const t={};function s(c,o){return" 管理员登录表单 "}const a=n(t,[["render",s]]),f={};function i(c,o){const _=a;return e(),r(_)}const p=n(f,[["render",i]]);export{p as default};

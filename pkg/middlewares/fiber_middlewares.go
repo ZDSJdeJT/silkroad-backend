@@ -25,7 +25,7 @@ func FiberMiddlewares(app *fiber.App, enableCors bool) {
 	app.Use(logger.New())
 	app.Use(requestid.New())
 	app.Use(limiter.New(limiter.Config{
-		Max:               20,
+		Max:               40,
 		Expiration:        30 * time.Second,
 		LimiterMiddleware: limiter.SlidingWindow{},
 		LimitReached: func(ctx *fiber.Ctx) error {

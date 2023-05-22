@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v1/admin/options": {
+        "/v1/admin/settings/{key}": {
             "put": {
                 "description": "更新配置项信息",
                 "consumes": [
@@ -31,18 +31,25 @@ const docTemplate = `{
                 "summary": "更新配置项",
                 "parameters": [
                     {
-                        "description": "配置项",
-                        "name": "option",
+                        "type": "string",
+                        "description": "配置项键",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "配置项新值",
+                        "name": "value",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "type": "string"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":{\"key\":\"WEBSITE_NAME\",\"value\":{\"data\":\"New Silk Road\"},\"label\":\"网站名称\",\"isPublic\":true,\"CreatedAt\":\"2023-05-21T15:29:42.6390127+08:00\",\"UpdatedAt\":\"2023-05-23T10:31:12.1234567+08:00\"}}",
+                        "description": "{\"success\":true,\"message\":\"更新成功\",\"result\":{\"key\":\"WEBSITE_TITLE\",\"value\":{\"data\":\"New Silk Road\"},\"label\":\"网站名称\",\"isPublic\":true,\"CreatedAt\":\"2023-05-21T15:29:42.6390127+08:00\",\"UpdatedAt\":\"2023-05-23T10:31:12.1234567+08:00\"}}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -68,7 +75,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/public-options": {
+        "/v1/public-settings": {
             "get": {
                 "description": "获取公开的配置项信息",
                 "consumes": [
@@ -83,7 +90,36 @@ const docTemplate = `{
                 "summary": "获取公开的配置项",
                 "responses": {
                     "200": {
-                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":[{\"key\":\"WEBSITE_NAME\",\"value\":{\"data\":\"Silk Road\"},\"label\":\"网站名称\",\"isPublic\":true,\"CreatedAt\":\"2023-05-21T15:29:42.6390127+08:00\",\"UpdatedAt\":\"2023-05-21T15:29:42.6390127+08:00\"}, {...}]}",
+                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":{\"UPLOAD_FILE_SIZE_LIMIT\":10, ...}}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/settings": {
+            "get": {
+                "description": "获取所有配置项信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "配置项"
+                ],
+                "summary": "获取所有配置项",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":[{\"key\":\"UPLOAD_FILE_SIZE_LIMIT\",\"value\":{\"data\":10},\"label\":\"上传大小限制\",\"isPublic\":true,\"createdAt\":\"2023-05-22T15:10:40.7958637+08:00\",\"updatedAt\":\"2023-05-22T15:10:40.7958637+08:00\"}, {...}]}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }

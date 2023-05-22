@@ -20,6 +20,14 @@ func Success(result interface{}) *Response {
 	}
 }
 
+func SuccessWithMessage(result interface{}, message string) *Response {
+	return &Response{
+		Success: true,
+		Message: message,
+		Result:  result,
+	}
+}
+
 func Fail(message string) *Response {
 	return &Response{
 		Success: false,
