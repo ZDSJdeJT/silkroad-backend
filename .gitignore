@@ -24,7 +24,5 @@ go.work
 .env.production
 .env.development
 
-vendor/
-
 data/files/*
 data/database/*
