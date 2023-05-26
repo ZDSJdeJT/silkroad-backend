@@ -12,6 +12,10 @@ func APIRoutes(app *fiber.App) {
 	// 公开接口
 	route.Get("/public-settings", controllers.GetPublicSettings)
 	route.Post("/admin/login", controllers.AdminLogin)
+	route.Post("/upload/file", controllers.UploadFile)
+	route.Post("/upload/file/merge/:id", controllers.MergeFile)
+	route.Post("/upload/text", controllers.UploadText)
+	route.Get("/receive", controllers.Receive)
 	// 需要鉴权的接口
 	route.Use(middlewares.JWTProtected())
 	route.Get("/system/info", controllers.GetSystemInfo)

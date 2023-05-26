@@ -31,7 +31,7 @@ func AdminLogin(ctx *fiber.Ctx) error {
 	// 从请求体中读取 JSON 数据
 	body := ctx.Body()
 
-	// 反序列化JSON数据为 LoginRequest 类型的对象
+	// 反序列化 JSON 数据为 LoginRequest 类型的对象
 	var req LoginRequest
 	err := json.Unmarshal(body, &req)
 	if err != nil {

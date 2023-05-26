@@ -15,7 +15,7 @@ func InitDatabase() error {
 		return err
 	}
 
-	err = db.AutoMigrate(&models.Setting{})
+	err = db.AutoMigrate(&models.Setting{}, &models.Record{})
 	if err != nil {
 		return err
 	}

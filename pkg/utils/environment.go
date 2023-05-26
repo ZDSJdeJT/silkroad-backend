@@ -3,13 +3,18 @@ package utils
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
-func CheckEnvVarsExist(vars []string) (error, error) {
+func CheckEnvVarsExist(vars []string) error {
+	var missingVars []string
 	for _, envVar := range vars {
 		if os.Getenv(envVar) == "" {
-			return fmt.Errorf("missing environment variable %s", envVar), nil
+			missingVars = append(missingVars, envVar)
 		}
 	}
-	return nil, nil
+	if len(missingVars) > 0 {
+		return fmt.Errorf("missing environment variables: %s", strings.Join(missingVars, ", "))
+	}
+	return nil
 }

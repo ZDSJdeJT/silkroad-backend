@@ -51,7 +51,8 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error loading .env.production file: %s.", err)
 		}
-		if _, err := utils.CheckEnvVarsExist([]string{"PORT", "APP_NAME", "APP_VERSION", "DATABASE_DSN", "JWT_SECRET_KEY", "JWT_SECRET_KEY_EXPIRE_MINUTES_COUNT"}); err != nil {
+		err = utils.CheckEnvVarsExist([]string{"PORT", "APP_NAME", "APP_VERSION", "DATABASE_DSN", "JWT_SECRET_KEY", "JWT_SECRET_KEY_EXPIRE_MINUTES_COUNT"})
+		if err != nil {
 			log.Fatalf("Error starting: %s.", err)
 		}
 		middlewares.FiberMiddlewares(app, false)
@@ -60,7 +61,8 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error loading .env.development file: %s.", err)
 		}
-		if _, err := utils.CheckEnvVarsExist([]string{"PORT", "APP_NAME", "APP_VERSION", "DATABASE_DSN", "JWT_SECRET_KEY", "JWT_SECRET_KEY_EXPIRE_MINUTES_COUNT"}); err != nil {
+		err = utils.CheckEnvVarsExist([]string{"PORT", "APP_NAME", "APP_VERSION", "DATABASE_DSN", "JWT_SECRET_KEY", "JWT_SECRET_KEY_EXPIRE_MINUTES_COUNT"})
+		if err != nil {
 			log.Fatalf("Error starting: %s.", err)
 		}
 		middlewares.FiberMiddlewares(app, true)
