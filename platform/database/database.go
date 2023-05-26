@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"os"
 	"silkroad-backend/app/models"
+	"silkroad-backend/pkg/utils"
 )
 
 func InitDatabase() error {
@@ -30,9 +31,13 @@ func initSettings(db *gorm.DB) error {
 	var settings []models.Setting
 	data := db.Find(&settings)
 	if data.RowsAffected == 0 {
+		var adminPassword, err = utils.EncryptPassword("admin")
+		if err != nil {
+			return err
+		}
 		defaultOptions := []models.Setting{
 			{Key: "ADMIN_NAME", Value: json.RawMessage(`{"data":"admin"}`), Label: "管理员名称", IsPublic: false},
-			{Key: "ADMIN_PASSWORD", Value: json.RawMessage(`{"data":"admin"}`), Label: "管理员密码", IsPublic: false},
+			{Key: "ADMIN_PASSWORD", Value: json.RawMessage(`{"data":"` + adminPassword + `"}`), Label: "管理员密码", IsPublic: false},
 			{Key: "WEBSITE_TITLE", Value: json.RawMessage(`{"data":"Silk Road"}`), Label: "网站名称", IsPublic: false},
 			{Key: "WEBSITE_DESCRIPTION", Value: json.RawMessage(`{"data":"Silk Road"}`), Label: "网站描述", IsPublic: false},
 			{Key: "WEBSITE_KEYWORDS", Value: json.RawMessage(`{"data":"匿名口令分享文本、文件"}`), Label: "网站关键词", IsPublic: false},

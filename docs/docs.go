@@ -31,33 +31,30 @@ const docTemplate = `{
                 "summary": "管理员登录",
                 "parameters": [
                     {
-                        "description": "用户名",
-                        "name": "username",
+                        "description": "管理员",
+                        "name": "admin",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "密码",
-                        "name": "password",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/controllers.LoginRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\":true,\"message\":\"登录成功！\",\"result\":null}",
+                        "description": "{\"success\":true,\"message\":\"登录成功\",\"result\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODUxODEwNjV9.Uj37YBTlIm4v5dcqEI4371oqNuyk632BYcuqZgYSFL8\"}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
                     },
                     "400": {
-                        "description": "{\"success\":false,\"message\":\"用户名或密码错误！\",\"result\":null}",
+                        "description": "{\"success\":false,\"message\":\"用户名或密码错误\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -67,6 +64,11 @@ const docTemplate = `{
         },
         "/v1/admin/settings/{key}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "更新配置项信息",
                 "consumes": [
                     "application/json"
@@ -98,13 +100,19 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\":true,\"message\":\"更新成功\",\"result\":{\"key\":\"WEBSITE_TITLE\",\"value\":{\"data\":\"New Silk Road\"},\"label\":\"网站名称\",\"isPublic\":true,\"CreatedAt\":\"2023-05-21T15:29:42.6390127+08:00\",\"UpdatedAt\":\"2023-05-23T10:31:12.1234567+08:00\"}}",
+                        "description": "{\"success\":true,\"message\":\"更新成功\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
                     },
                     "400": {
                         "description": "{\"success\":false,\"message\":\"请求无效或参数错误\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "{\"success\":false,\"message\":\"请登录\",result:null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -139,7 +147,7 @@ const docTemplate = `{
                 "summary": "获取公开的配置项",
                 "responses": {
                     "200": {
-                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":{\"UPLOAD_FILE_SIZE_LIMIT\":10, ...}}",
+                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":{\"UPLOAD_FILE_SIZE_LIMIT\":10,...}}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -155,6 +163,11 @@ const docTemplate = `{
         },
         "/v1/settings": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "获取所有配置项信息",
                 "consumes": [
                     "application/json"
@@ -168,7 +181,13 @@ const docTemplate = `{
                 "summary": "获取所有配置项",
                 "responses": {
                     "200": {
-                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":[{\"key\":\"UPLOAD_FILE_SIZE_LIMIT\",\"value\":{\"data\":10},\"label\":\"上传大小限制\",\"isPublic\":true,\"createdAt\":\"2023-05-22T15:10:40.7958637+08:00\",\"updatedAt\":\"2023-05-22T15:10:40.7958637+08:00\"}, {...}]}",
+                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":[{\"key\":\"UPLOAD_FILE_SIZE_LIMIT\",\"value\":{\"data\":10},\"label\":\"上传大小限制\",\"isPublic\":true,\"createdAt\":\"2023-05-22T15:10:40.7958637+08:00\",\"updatedAt\":\"2023-05-22T15:10:40.7958637+08:00\"},{...}]}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "{\"success\":false,\"message\":\"请登录\",result:null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -184,6 +203,11 @@ const docTemplate = `{
         },
         "/v1/system/info": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "获取系统应用程序名称和版本号",
                 "consumes": [
                     "application/json"
@@ -202,6 +226,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.Response"
                         }
                     },
+                    "401": {
+                        "description": "{\"success\":false,\"message\":\"请登录\",result:null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
                     "429": {
                         "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",result:null}",
                         "schema": {
@@ -213,6 +243,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "utils.Response": {
             "type": "object",
             "properties": {
@@ -224,6 +265,13 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

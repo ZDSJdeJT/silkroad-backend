@@ -3,14 +3,13 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"golang.org/x/net/html"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"io/fs"
 	"os"
 	"silkroad-backend/app/models"
 	"strings"
-
-	"golang.org/x/net/html"
 )
 
 func InitClientHTML() error {

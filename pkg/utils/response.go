@@ -1,11 +1,6 @@
 package utils
 
 // Response 响应结果结构体定义
-//
-// @typedef Response
-// @property {boolean} success - 标记请求是否成功
-// @property {string} message - 请求执行结果描述
-// @property {object} result - 请求执行结果数据
 type Response struct {
 	Success bool        `json:"success"`
 	Message string      `json:"message"`

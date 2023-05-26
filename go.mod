@@ -5,8 +5,11 @@ go 1.20
 require (
 	github.com/arsmn/fiber-swagger/v2 v2.31.1
 	github.com/gofiber/fiber/v2 v2.46.0
+	github.com/gofiber/jwt/v2 v2.2.7
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/joho/godotenv v1.5.1
 	github.com/swaggo/swag v1.16.1
+	golang.org/x/crypto v0.9.0
 	golang.org/x/net v0.10.0
 	gorm.io/driver/sqlite v1.4.3
 	gorm.io/gorm v1.25.1
@@ -19,6 +22,7 @@ require (
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/spec v0.20.9 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
+	github.com/golang-jwt/jwt/v4 v4.0.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect

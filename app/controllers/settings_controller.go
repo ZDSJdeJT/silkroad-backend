@@ -19,7 +19,7 @@ import (
 // @Tags 配置项
 // @Accept json
 // @Produce json
-// @Success 200 {object} utils.Response "{"success":true,"message":"成功","result":{"UPLOAD_FILE_SIZE_LIMIT":10, ...}}"
+// @Success 200 {object} utils.Response "{"success":true,"message":"成功","result":{"UPLOAD_FILE_SIZE_LIMIT":10,...}}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
 // @Router /v1/public-settings [get]
 func GetPublicSettings(ctx *fiber.Ctx) error {
@@ -56,9 +56,11 @@ func GetPublicSettings(ctx *fiber.Ctx) error {
 // @Tags 配置项
 // @Accept json
 // @Produce json
-// @Success 200 {object} utils.Response "{"success":true,"message":"成功","result":[{"key":"UPLOAD_FILE_SIZE_LIMIT","value":{"data":10},"label":"上传大小限制","isPublic":true,"createdAt":"2023-05-22T15:10:40.7958637+08:00","updatedAt":"2023-05-22T15:10:40.7958637+08:00"}, {...}]}"
+// @Success 200 {object} utils.Response "{"success":true,"message":"成功","result":[{"key":"UPLOAD_FILE_SIZE_LIMIT","value":{"data":10},"label":"上传大小限制","isPublic":true,"createdAt":"2023-05-22T15:10:40.7958637+08:00","updatedAt":"2023-05-22T15:10:40.7958637+08:00"},{...}]}"
+// @Failure 401 {object} utils.Response "{"success":false,"message":"请登录",result:null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
 // @Router /v1/settings [get]
+// @Security ApiKeyAuth
 func GetSettings(ctx *fiber.Ctx) error {
 	// 打开数据库连接
 	db, err := gorm.Open(sqlite.Open(os.Getenv("DATABASE_DSN")), &gorm.Config{})
@@ -67,13 +69,24 @@ func GetSettings(ctx *fiber.Ctx) error {
 	}
 
 	// 查找所有公共配置项
-	var publicSettings []models.Setting
-	if err := db.Find(&publicSettings).Error; err != nil {
+	var settings []models.Setting
+	if err := db.Find(&settings).Error; err != nil {
 		return err
 	}
 
+	for i, setting := range settings {
+		if setting.Key == "ADMIN_PASSWORD" {
+			var memo map[string]interface{}
+			err = json.Unmarshal(setting.Value, &memo)
+			memo["data"] = ""
+			setting.Value, _ = json.Marshal(memo)
+			settings[i] = setting
+			break
+		}
+	}
+
 	// 返回 JSON 格式响应
-	res := utils.Success(publicSettings)
+	res := utils.Success(settings)
 	return ctx.JSON(res)
 }
 
@@ -86,11 +99,13 @@ func GetSettings(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param key path string true "配置项键"
 // @Param value body string true "配置项新值"
-// @Success 200 {object} utils.Response "{"success":true,"message":"更新成功","result":{"key":"WEBSITE_TITLE","value":{"data":"New Silk Road"},"label":"网站名称","isPublic":true,"CreatedAt":"2023-05-21T15:29:42.6390127+08:00","UpdatedAt":"2023-05-23T10:31:12.1234567+08:00"}}"
+// @Success 200 {object} utils.Response "{"success":true,"message":"更新成功","result":null}"
 // @Failure 400 {object} utils.Response "{"success":false,"message":"请求无效或参数错误","result":null}"
+// @Failure 401 {object} utils.Response "{"success":false,"message":"请登录",result:null}"
 // @Failure 404 {object} utils.Response "{"success":false,"message":"未找到配置项","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
 // @Router /v1/admin/settings/{key} [put]
+// @Security ApiKeyAuth
 func UpdateSetting(ctx *fiber.Ctx) error {
 	// 打开数据库连接
 	db, err := gorm.Open(sqlite.Open(os.Getenv("DATABASE_DSN")), &gorm.Config{})
@@ -122,16 +137,51 @@ func UpdateSetting(ctx *fiber.Ctx) error {
 	switch temp.(type) {
 	case string:
 		// "data" 是字符串类型，解析字符串并存储
-		data := struct {
-			Data string `json:"data"`
-		}{
-			Data: body,
+		if key == "ADMIN_PASSWORD" {
+			var adminPassword, err = utils.EncryptPassword(body)
+			if err != nil {
+				return err
+			}
+			data := struct {
+				Data string `json:"data"`
+			}{
+				Data: adminPassword,
+			}
+			jsonData, err := json.Marshal(data)
+			if err != nil {
+				return err
+			}
+			setting.Value = jsonData
+		} else {
+			data := struct {
+				Data string `json:"data"`
+			}{
+				Data: body,
+			}
+			jsonData, err := json.Marshal(data)
+			if err != nil {
+				return err
+			}
+			setting.Value = jsonData
+
+			switch key {
+			case "WEBSITE_TITLE":
+				err := utils.ReplaceClientHTMLTitle(body)
+				if err != nil {
+					return err
+				}
+			case "WEBSITE_DESCRIPTION":
+				err := utils.ReplaceClientHTMLMetaDescription(body)
+				if err != nil {
+					return err
+				}
+			case "WEBSITE_KEYWORDS":
+				err := utils.ReplaceClientHTMLMetaKeywords(body)
+				if err != nil {
+					return err
+				}
+			}
 		}
-		jsonData, err := json.Marshal(data)
-		if err != nil {
-			return err
-		}
-		setting.Value = jsonData
 	case float64:
 		// "data" 是浮点数类型，解析数字并存储
 		value, err := strconv.ParseFloat(body, 64)
@@ -155,25 +205,7 @@ func UpdateSetting(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	switch key {
-	case "WEBSITE_TITLE":
-		err := utils.ReplaceClientHTMLTitle(body)
-		if err != nil {
-			return err
-		}
-	case "WEBSITE_DESCRIPTION":
-		err := utils.ReplaceClientHTMLMetaDescription(body)
-		if err != nil {
-			return err
-		}
-	case "WEBSITE_KEYWORDS":
-		err := utils.ReplaceClientHTMLMetaKeywords(body)
-		if err != nil {
-			return err
-		}
-	}
-
 	// 返回 JSON 格式响应
-	res := utils.SuccessWithMessage(setting, "更新成功")
+	res := utils.SuccessWithMessage(nil, "更新成功")
 	return ctx.JSON(res)
 }

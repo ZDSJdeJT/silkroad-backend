@@ -28,14 +28,24 @@ github.com/gofiber/fiber/v2/internal/schema
 github.com/gofiber/fiber/v2/internal/storage/memory
 github.com/gofiber/fiber/v2/middleware/compress
 github.com/gofiber/fiber/v2/middleware/cors
+github.com/gofiber/fiber/v2/middleware/etag
 github.com/gofiber/fiber/v2/middleware/filesystem
 github.com/gofiber/fiber/v2/middleware/helmet
 github.com/gofiber/fiber/v2/middleware/idempotency
 github.com/gofiber/fiber/v2/middleware/limiter
 github.com/gofiber/fiber/v2/middleware/logger
 github.com/gofiber/fiber/v2/middleware/recover
-github.com/gofiber/fiber/v2/middleware/requestid
+github.com/gofiber/fiber/v2/middleware/skip
 github.com/gofiber/fiber/v2/utils
+# github.com/gofiber/jwt/v2 v2.2.7
+## explicit; go 1.15
+github.com/gofiber/jwt/v2
+# github.com/golang-jwt/jwt v3.2.2+incompatible
+## explicit
+github.com/golang-jwt/jwt
+# github.com/golang-jwt/jwt/v4 v4.0.0
+## explicit; go 1.15
+github.com/golang-jwt/jwt/v4
 # github.com/google/uuid v1.3.0
 ## explicit
 github.com/google/uuid
@@ -106,6 +116,10 @@ github.com/valyala/fasthttp/stackless
 # github.com/valyala/tcplisten v1.0.0
 ## explicit; go 1.12
 github.com/valyala/tcplisten
+# golang.org/x/crypto v0.9.0
+## explicit; go 1.17
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
 # golang.org/x/net v0.10.0
 ## explicit; go 1.17
 golang.org/x/net/html
