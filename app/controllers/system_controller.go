@@ -14,7 +14,7 @@ import (
 // @Accept json
 // @Produce json
 // @Success 200 {object} utils.Response "{"success":true,"message":"Success","result":{"appName":"GoApp","appVersion":"1.0.0"}}"
-// @Failure 401 {object} utils.Response "{"success":false,"message":"请登录",result:null}"
+// @Failure 401 {object} utils.Response "{"success":false,"message":"请登录后再试",result:null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！",result:null}"
 // @Router /v1/system/info [get]
 // @Security ApiKeyAuth

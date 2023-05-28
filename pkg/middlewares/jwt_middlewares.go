@@ -24,5 +24,5 @@ func JWTProtected() func(*fiber.Ctx) error {
 
 func jwtError(ctx *fiber.Ctx, _ error) error {
 	// Return status 401 and failed authentication error.
-	return ctx.Status(fiber.StatusUnauthorized).JSON(utils.Fail("请登录"))
+	return ctx.Status(fiber.StatusUnauthorized).JSON(utils.Fail("请登录后再试"))
 }

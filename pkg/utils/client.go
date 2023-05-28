@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"encoding/json"
 	"fmt"
 	"golang.org/x/net/html"
 	"gorm.io/driver/sqlite"
@@ -24,32 +23,17 @@ func InitClientHTML() error {
 	for _, setting := range websiteSettings {
 		switch setting.Key {
 		case "WEBSITE_TITLE":
-			websiteName := setting.Value
-			var memo map[string]interface{}
-			if err := json.Unmarshal(websiteName, &memo); err != nil {
-				return err
-			}
-			err = ReplaceClientHTMLTitle(memo["data"].(string))
+			err = ReplaceClientHTMLTitle(setting.TextValue)
 			if err != nil {
 				return err
 			}
 		case "WEBSITE_DESCRIPTION":
-			websiteDescription := setting.Value
-			var memo map[string]interface{}
-			if err := json.Unmarshal(websiteDescription, &memo); err != nil {
-				return err
-			}
-			err = ReplaceClientHTMLMetaDescription(memo["data"].(string))
+			err = ReplaceClientHTMLMetaDescription(setting.TextValue)
 			if err != nil {
 				return err
 			}
 		case "WEBSITE_KEYWORDS":
-			websiteKeywords := setting.Value
-			var memo map[string]interface{}
-			if err := json.Unmarshal(websiteKeywords, &memo); err != nil {
-				return err
-			}
-			err = ReplaceClientHTMLMetaKeywords(memo["data"].(string))
+			err = ReplaceClientHTMLMetaKeywords(setting.TextValue)
 			if err != nil {
 				return err
 			}

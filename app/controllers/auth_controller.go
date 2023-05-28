@@ -3,14 +3,12 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-	"os"
 	"silkroad-backend/app/models"
 	"silkroad-backend/pkg/utils"
+	"silkroad-backend/platform/database"
 )
 
-type LoginRequest struct {
+type LoginForm struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -22,7 +20,7 @@ type LoginRequest struct {
 // @Tags 管理员
 // @Accept json
 // @Produce json
-// @Param admin body LoginRequest true "管理员"
+// @Param admin body LoginForm true "管理员"
 // @Success 200 {object} utils.Response "{"success":true,"message":"登录成功","result":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODUxODEwNjV9.Uj37YBTlIm4v5dcqEI4371oqNuyk632BYcuqZgYSFL8"}"
 // @Failure 400 {object} utils.Response "{"success":false,"message":"用户名或密码错误","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
@@ -32,14 +30,14 @@ func AdminLogin(ctx *fiber.Ctx) error {
 	body := ctx.Body()
 
 	// 反序列化 JSON 数据为 LoginRequest 类型的对象
-	var req LoginRequest
+	var req LoginForm
 	err := json.Unmarshal(body, &req)
 	if err != nil {
 		return err
 	}
 
 	// 打开数据库连接
-	db, err := gorm.Open(sqlite.Open(os.Getenv("DATABASE_DSN")), &gorm.Config{})
+	db, err := database.OpenDBConnection()
 	if err != nil {
 		return err
 	}
@@ -53,17 +51,17 @@ func AdminLogin(ctx *fiber.Ctx) error {
 	for _, setting := range settings {
 		switch setting.Key {
 		case "ADMIN_NAME":
-			var memo map[string]interface{}
-			err = json.Unmarshal(setting.Value, &memo)
-			if name, ok := memo["data"].(string); ok {
-				adminName = name
+			length := len(req.Username)
+			if length < int(setting.Min) || length > int(setting.Max) {
+				return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail("用户名或密码错误"))
 			}
+			adminName = setting.TextValue
 		case "ADMIN_PASSWORD":
-			var memo map[string]interface{}
-			err = json.Unmarshal(setting.Value, &memo)
-			if password, ok := memo["data"].(string); ok {
-				adminPassword = password
+			length := len(req.Password)
+			if length < int(setting.Min) || length > int(setting.Max) {
+				return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail("用户名或密码错误"))
 			}
+			adminPassword = setting.TextValue
 		}
 	}
 
@@ -75,7 +73,6 @@ func AdminLogin(ctx *fiber.Ctx) error {
 			if err != nil {
 				return err
 			}
-
 			return ctx.JSON(utils.SuccessWithMessage(token, "登录成功"))
 		}
 	}

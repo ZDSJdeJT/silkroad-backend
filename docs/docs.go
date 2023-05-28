@@ -36,7 +36,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.LoginRequest"
+                            "$ref": "#/definitions/controllers.LoginForm"
                         }
                     }
                 ],
@@ -112,7 +112,7 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "{\"success\":false,\"message\":\"请登录\",result:null}",
+                        "description": "{\"success\":false,\"message\":\"请登录后再试\",result:null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -181,13 +181,13 @@ const docTemplate = `{
                 "summary": "获取所有配置项",
                 "responses": {
                     "200": {
-                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":[{\"key\":\"UPLOAD_FILE_SIZE_LIMIT\",\"value\":{\"data\":10},\"label\":\"上传大小限制\",\"isPublic\":true,\"createdAt\":\"2023-05-22T15:10:40.7958637+08:00\",\"updatedAt\":\"2023-05-22T15:10:40.7958637+08:00\"},{...}]}",
+                        "description": "{\"success\":true,\"message\":\"成功\",\"result\":[{\"key\":\"ADMIN_NAME\",\"textValue\":\"admin\",\"numberValue\":0,\"isText\":true,\"min\":5,\"max\":16,\"label\":\"管理员名称\",\"isPublic\":false,\"createdAt\":\"2023-05-28T12:33:15.8278992+08:00\",\"updatedAt\":\"2023-05-28T12:33:15.8278992+08:00\"},{...}]}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
                     },
                     "401": {
-                        "description": "{\"success\":false,\"message\":\"请登录\",result:null}",
+                        "description": "{\"success\":false,\"message\":\"请登录后再试\",result:null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -227,7 +227,7 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "{\"success\":false,\"message\":\"请登录\",result:null}",
+                        "description": "{\"success\":false,\"message\":\"请登录后再试\",result:null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -243,7 +243,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controllers.LoginRequest": {
+        "controllers.LoginForm": {
             "type": "object",
             "properties": {
                 "password": {

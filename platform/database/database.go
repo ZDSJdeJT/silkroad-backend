@@ -1,7 +1,6 @@
 package database
 
 import (
-	"encoding/json"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"os"
@@ -36,20 +35,27 @@ func initSettings(db *gorm.DB) error {
 			return err
 		}
 		defaultOptions := []models.Setting{
-			{Key: "ADMIN_NAME", Value: json.RawMessage(`{"data":"admin"}`), Label: "管理员名称", IsPublic: false},
-			{Key: "ADMIN_PASSWORD", Value: json.RawMessage(`{"data":"` + adminPassword + `"}`), Label: "管理员密码", IsPublic: false},
-			{Key: "WEBSITE_TITLE", Value: json.RawMessage(`{"data":"Silk Road"}`), Label: "网站名称", IsPublic: false},
-			{Key: "WEBSITE_DESCRIPTION", Value: json.RawMessage(`{"data":"Silk Road"}`), Label: "网站描述", IsPublic: false},
-			{Key: "WEBSITE_KEYWORDS", Value: json.RawMessage(`{"data":"匿名口令分享文本、文件"}`), Label: "网站关键词", IsPublic: false},
-			{Key: "MAX_RETENTION_TIME", Value: json.RawMessage(`{"data":365}`), Label: "最长保留时间", IsPublic: false},
-			{Key: "DELETE_EXPIRED_INTERVAL", Value: json.RawMessage(`{"data":30}`), Label: "删除过期间隔", IsPublic: false},
-			{Key: "UPLOAD_FILE_SIZE_LIMIT", Value: json.RawMessage(`{"data":10}`), Label: "上传文件大小限制", IsPublic: true},
-			{Key: "UPLOAD_TEXT_LENGTH_LIMIT", Value: json.RawMessage(`{"data":1000}`), Label: "上传文本长度限制", IsPublic: true},
-			{Key: "FOOTER_INFO", Value: json.RawMessage(`{"data":"Copyright © 2023 Silk Road"}`), Label: "页脚信息", IsPublic: true},
+			{Key: "ADMIN_NAME", IsText: true, TextValue: "admin", Min: 5, Max: 16, Label: "管理员名称", IsPublic: false},
+			{Key: "ADMIN_PASSWORD", IsText: true, TextValue: adminPassword, Min: 5, Max: 16, Label: "管理员密码", IsPublic: false},
+			{Key: "WEBSITE_TITLE", IsText: true, TextValue: "Silk Road", Min: 5, Max: 16, Label: "网站名称", IsPublic: false},
+			{Key: "WEBSITE_DESCRIPTION", IsText: true, TextValue: "Silk Road", Min: 5, Max: 16, Label: "网站描述", IsPublic: false},
+			{Key: "WEBSITE_KEYWORDS", IsText: true, TextValue: "匿名口令分享文本、文件", Min: 5, Max: 16, Label: "网站关键词", IsPublic: false},
+			{Key: "FOOTER_INFO", IsText: true, TextValue: `Built with <a href="https://github.com/ZDSJdeJT/silkroad-backend" target="_blank">SilkRoad</a>`, Min: 5, Max: 16, Label: "页脚信息", IsPublic: true},
+			{Key: "MAX_RETENTION_TIME", IsText: false, NumberValue: 365, Min: 5, Max: 16, Label: "最长保留时间", IsPublic: false},
+			{Key: "UPLOAD_FILE_SIZE_LIMIT", IsText: false, NumberValue: 100000, Min: 5, Max: 16, Label: "上传文件大小限制", IsPublic: true},
+			{Key: "UPLOAD_TEXT_LENGTH_LIMIT", IsText: false, NumberValue: 1000, Min: 5, Max: 16, Label: "上传文本长度限制", IsPublic: true},
 		}
 		if err := db.CreateInBatches(defaultOptions, len(defaultOptions)).Error; err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func OpenDBConnection() (*gorm.DB, error) {
+	db, err := gorm.Open(sqlite.Open(os.Getenv("DATABASE_DSN")), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }
