@@ -26,6 +26,7 @@ go.work
 
 # data files
 data/files/*
+data/chunks/*
 data/database/*
 
 .idea/

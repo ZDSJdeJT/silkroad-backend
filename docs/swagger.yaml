@@ -1,12 +1,5 @@
 basePath: /api
 definitions:
-  controllers.LoginForm:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    type: object
   utils.Response:
     properties:
       message:
@@ -14,6 +7,22 @@ definitions:
       result: {}
       success:
         type: boolean
+    type: object
+  v1.LoginForm:
+    properties:
+      adminName:
+        type: string
+      password:
+        type: string
+    type: object
+  v1.UploadTextForm:
+    properties:
+      downloadTimes:
+        type: integer
+      keepDays:
+        type: integer
+      text:
+        type: string
     type: object
 info:
   contact: {}
@@ -32,16 +41,16 @@ paths:
         name: admin
         required: true
         schema:
-          $ref: '#/definitions/controllers.LoginForm'
+          $ref: '#/definitions/v1.LoginForm'
       produces:
       - application/json
       responses:
         "200":
-          description: '{"success":true,"message":"登录成功","result":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODUxODEwNjV9.Uj37YBTlIm4v5dcqEI4371oqNuyk632BYcuqZgYSFL8"}'
+          description: '{"success":true,"message":"登录成功","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
         "400":
-          description: '{"success":false,"message":"用户名或密码错误","result":null}'
+          description: '{"success":false,"message":"请求无效或参数错误","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
         "429":
@@ -51,6 +60,53 @@ paths:
       summary: 管理员登录
       tags:
       - 管理员
+  /v1/admin/logout:
+    post:
+      consumes:
+      - application/json
+      description: 管理员退出登录
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"退出登录成功","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: '{"success":false,"message":"请登录后再试",result:null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 管理员退出登录
+      tags:
+      - 管理员
+  /v1/admin/settings:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有配置项信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"","result":[{"key":"ADMIN_NAME","textValue":"admin","numberValue":0,"isText":true,"min":5,"max":20,"label":{"en-US":"Admin
+            name","zh-CN":"管理员名称"}},{...}]}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: '{"success":false,"message":"请登录后再试",result:null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 获取所有配置项
+      tags:
+      - 配置项
   /v1/admin/settings/{key}:
     put:
       consumes:
@@ -91,56 +147,10 @@ paths:
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
-      security:
-      - ApiKeyAuth: []
       summary: 更新配置项
       tags:
       - 配置项
-  /v1/public-settings:
-    get:
-      consumes:
-      - application/json
-      description: 获取公开的配置项信息
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"success":true,"message":"成功","result":{"UPLOAD_FILE_SIZE_LIMIT":10,...}}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-        "429":
-          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-      summary: 获取公开的配置项
-      tags:
-      - 配置项
-  /v1/settings:
-    get:
-      consumes:
-      - application/json
-      description: 获取所有配置项信息
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"success":true,"message":"成功","result":[{"key":"ADMIN_NAME","textValue":"admin","numberValue":0,"isText":true,"min":5,"max":16,"label":"管理员名称","isPublic":false,"createdAt":"2023-05-28T12:33:15.8278992+08:00","updatedAt":"2023-05-28T12:33:15.8278992+08:00"},{...}]}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-        "401":
-          description: '{"success":false,"message":"请登录后再试",result:null}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-        "429":
-          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: 获取所有配置项
-      tags:
-      - 配置项
-  /v1/system/info:
+  /v1/admin/system/info:
     get:
       consumes:
       - application/json
@@ -149,7 +159,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success":true,"message":"Success","result":{"appName":"GoApp","appVersion":"1.0.0"}}'
+          description: '{"success":true,"message":"Success","result":{"appName":"Silk
+            Road","appVersion":"1.0.0"}}'
           schema:
             $ref: '#/definitions/utils.Response'
         "401":
@@ -160,16 +171,213 @@ paths:
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！",result:null}'
           schema:
             $ref: '#/definitions/utils.Response'
-      security:
-      - ApiKeyAuth: []
       summary: 获取系统信息
       tags:
-      - 系统信息
+      - 系统
+  /v1/public/file/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除文件
+      parameters:
+      - description: 文件 id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"文件删除成功","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "404":
+          description: '{"success":false,"message":"未找到文件","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 删除文件
+      tags:
+      - 记录
+  /v1/public/receive/{code}:
+    get:
+      consumes:
+      - application/json
+      description: 接收文件或文本
+      parameters:
+      - description: 接收码
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"接收成功","result":{"id":"09cb82b3-20dc-4218-bcfc-dc33ca1ddb6a","code":"579186","content":"string","isFile":false,"downloadTimes":2,"expireAt":"2023-06-08T21:05:55.2348526+08:00"}}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "404":
+          description: '{"success":false,"message":"接收码无效","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 接收
+      tags:
+      - 记录
+  /v1/public/settings:
+    get:
+      consumes:
+      - application/json
+      description: 获取公开的配置项信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"","result":{"maxKeepDays":14,"maxUploadFileBytes":100000,"maxUploadTextLength":100000,"maxDownloadTimes":5}}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 获取公开的配置项
+      tags:
+      - 配置项
+  /v1/public/system/languages:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统支持的所有语言
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"Success","result":["zh-CN","en-US"]}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！",result:null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 获取系统语言
+      tags:
+      - 系统
+  /v1/public/text/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除文本
+      parameters:
+      - description: 文本 id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"文本删除成功","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "404":
+          description: '{"success":false,"message":"未找到文本","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 删除文本
+      tags:
+      - 记录
+  /v1/public/upload/file/{uuid}:
+    post:
+      consumes:
+      - application/json
+      description: 上传文件切片
+      parameters:
+      - description: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: size
+        in: formData
+        name: size
+        required: true
+        type: string
+      - description: totalChunks
+        in: formData
+        name: totalChunks
+        required: true
+        type: string
+      - description: index
+        in: formData
+        name: index
+        required: true
+        type: string
+      - description: chunk
+        in: formData
+        name: chunk
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 上传文件切片
+      tags:
+      - 记录
+  /v1/public/upload/text:
+    post:
+      consumes:
+      - application/json
+      description: 上传文本
+      parameters:
+      - description: 上传信息
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UploadTextForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"文本上传成功","result":"973758"}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: '{"success":false,"message":"请求无效或参数错误","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: '{"success":false,"message":"请登录后再试",result:null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 上传文本
+      tags:
+      - 记录
 schemes:
 - http
-securityDefinitions:
-  ApiKeyAuth:
-    in: header
-    name: Authorization
-    type: apiKey
 swagger: "2.0"

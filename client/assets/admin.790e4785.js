@@ -1,0 +1,1 @@
+import{api as a}from"./axios.7123f59d.js";const s="/admin",c=async()=>await a.get(`${s}/system/info`),i=async t=>await a.post(`${s}/login`,t),r=async()=>await a.post(`${s}/logout`),g=async()=>await a.get(`${s}/settings`),d=async(t,n)=>await a.put(`${s}/settings/${t}`,n);export{g as a,r as b,c as g,i as l,d as u};

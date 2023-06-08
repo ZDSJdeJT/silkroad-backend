@@ -3,16 +3,18 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
+	"silkroad-backend/cache"
+	"silkroad-backend/cron"
+	"silkroad-backend/database"
 	_ "silkroad-backend/docs"
-	"silkroad-backend/pkg/middlewares"
-	"silkroad-backend/pkg/routes"
-	"silkroad-backend/pkg/utils"
-	"silkroad-backend/platform/database"
+	"silkroad-backend/i18n"
+	"silkroad-backend/middlewares"
+	"silkroad-backend/routes"
+	"silkroad-backend/utils"
 )
 
 // @title Silk Road
@@ -21,13 +23,11 @@ import (
 
 // @BasePath /api
 // @schemes http
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
 func main() {
 	app := fiber.New(fiber.Config{
-		JSONEncoder: json.Marshal,
-		JSONDecoder: json.Unmarshal,
+		JSONEncoder:       json.Marshal,
+		JSONDecoder:       json.Unmarshal,
+		EnablePrintRoutes: true,
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			// Status code defaults to 500
 			code := fiber.StatusInternalServerError
@@ -38,52 +38,55 @@ func main() {
 				code = e.Code
 			}
 
-			// Get error message from the error interface and send it as response
-			errorMessage := fmt.Errorf("%v", err)
-			return ctx.Status(code).JSON(utils.Fail(errorMessage.Error()))
+			if _, ok := ctx.Locals("lang").(string); !ok {
+				middlewares.SetLocals(ctx)
+			}
+			msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "internalServerError")
+			return ctx.Status(code).JSON(utils.Fail(msg))
 		},
 	})
 
-	env := os.Getenv("APP_ENV")
+	env := os.Getenv(utils.AppMode)
 	switch env {
 	case "production":
 		err := godotenv.Load(".env.production")
 		if err != nil {
 			log.Fatalf("Error loading .env.production file: %s.", err)
 		}
-		err = utils.CheckEnvVarsExist([]string{"PORT", "APP_NAME", "APP_VERSION", "DATABASE_DSN", "JWT_SECRET_KEY", "JWT_SECRET_KEY_EXPIRE_MINUTES_COUNT"})
+		err = utils.CheckEnvVarsExist()
 		if err != nil {
 			log.Fatalf("Error starting: %s.", err)
 		}
-		middlewares.FiberMiddlewares(app, false)
 	default:
 		err := godotenv.Load(".env.development")
 		if err != nil {
 			log.Fatalf("Error loading .env.development file: %s.", err)
 		}
-		err = utils.CheckEnvVarsExist([]string{"PORT", "APP_NAME", "APP_VERSION", "DATABASE_DSN", "JWT_SECRET_KEY", "JWT_SECRET_KEY_EXPIRE_MINUTES_COUNT"})
+		err = utils.CheckEnvVarsExist()
 		if err != nil {
 			log.Fatalf("Error starting: %s.", err)
 		}
-		middlewares.FiberMiddlewares(app, true)
 		routes.SwaggerRoutes(app)
 	}
 
-	if err := database.InitDatabase(); err != nil {
-		log.Fatalf("Error initing database: %s.", err)
-		return
+	settings, err := database.InitDatabase()
+	if err != nil {
+		log.Fatalf("Error initializing database: %s.", err)
 	}
 
-	err := utils.InitClientHTML()
+	err = cache.InitCacheAndClientHTML(settings)
 	if err != nil {
-		log.Fatalf("Error initing client HTML: %s.", err)
-		return
+		log.Fatalf("Error initializing cache and client HTML: %s.", err)
 	}
+
+	middlewares.CommonMiddlewares(app)
 
 	routes.APIRoutes(app)
 	routes.SPARoutes(app)
 
-	if err := app.Listen(":" + os.Getenv("PORT")); err != nil {
+	cron.Start()
+
+	if err := app.Listen(":" + os.Getenv(utils.APPPort)); err != nil {
 		log.Fatalf("Error starting: %s.", err)
 	}
 }
