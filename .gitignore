@@ -25,8 +25,8 @@ go.work
 .env.development
 
 # data files
-data/files/*
-data/chunks/*
+data/uploads/chunks/*
+data/uploads/data/*
 data/database/*
 
 .idea/

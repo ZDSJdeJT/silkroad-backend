@@ -11,9 +11,9 @@ const (
 	EnUS = "en-US"
 )
 
-var Languages = []string{ZhCN, EnUS}
-
 const DefaultLanguage = ZhCN
+
+var Languages = []string{DefaultLanguage, EnUS}
 
 func initI18n() *i18n.Bundle {
 	bundle := i18n.NewBundle(language.English)

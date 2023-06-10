@@ -69,14 +69,16 @@ func HandleSetting(setting models.Setting) error {
 		if err != nil {
 			return err
 		}
-	case models.MaxKeepDays:
-		Cache.Store(models.MaxKeepDays, setting.NumberValue)
-	case models.MaxDownloadTimes:
-		Cache.Store(models.MaxDownloadTimes, setting.NumberValue)
-	case models.MaxUploadFileBytes:
-		Cache.Store(models.MaxUploadFileBytes, setting.NumberValue)
-	case models.MaxUploadTextLength:
-		Cache.Store(models.MaxUploadTextLength, setting.NumberValue)
+	case models.KeepDays:
+		Cache.Store(models.KeepDays, setting.NumberValue)
+	case models.DownloadTimes:
+		Cache.Store(models.DownloadTimes, setting.NumberValue)
+	case models.UploadFileBytes:
+		Cache.Store(models.UploadFileBytes, setting.NumberValue)
+	case models.UploadChunkBytes:
+		Cache.Store(models.UploadChunkBytes, setting.NumberValue)
+	case models.UploadTextLength:
+		Cache.Store(models.UploadTextLength, setting.NumberValue)
 	}
 	return nil
 }

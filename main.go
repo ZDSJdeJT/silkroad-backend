@@ -41,6 +41,7 @@ func main() {
 			if _, ok := ctx.Locals("lang").(string); !ok {
 				middlewares.SetLocals(ctx)
 			}
+
 			msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "internalServerError")
 			return ctx.Status(code).JSON(utils.Fail(msg))
 		},

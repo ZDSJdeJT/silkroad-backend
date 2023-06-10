@@ -8,8 +8,7 @@ import (
 type Record struct {
 	Id            uuid.UUID `json:"id" gorm:"type:uuid;primaryKey"`
 	Code          string    `json:"code" gorm:"unique;not null"`
-	Content       string    `json:"content"`
-	IsFile        bool      `json:"isFile"`
+	Filename      string    `json:"filename"`
 	DownloadTimes uint64    `json:"downloadTimes"`
 	ExpireAt      time.Time `json:"expireAt"`
 	CreatedAt     time.Time `json:"-"`

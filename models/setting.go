@@ -23,12 +23,13 @@ type Setting struct {
 }
 
 const (
-	AdminName           = "ADMIN_NAME"
-	AdminPassword       = "ADMIN_PASSWORD"
-	WebsiteDescription  = "WEBSITE_DESCRIPTION"
-	WebsiteKeywords     = "WEBSITE_KEYWORDS"
-	MaxKeepDays         = "MAX_KEEP_DAYS"
-	MaxDownloadTimes    = "MAX_DOWNLOAD_TIMES"
-	MaxUploadFileBytes  = "MAX_UPLOAD_FILE_BYTES"
-	MaxUploadTextLength = "MAX_UPLOAD_TEXT_LENGTH"
+	AdminName          = "ADMIN_NAME"
+	AdminPassword      = "ADMIN_PASSWORD"
+	WebsiteDescription = "WEBSITE_DESCRIPTION"
+	WebsiteKeywords    = "WEBSITE_KEYWORDS"
+	KeepDays           = "KEEP_DAYS"
+	DownloadTimes      = "DOWNLOAD_TIMES"
+	UploadFileBytes    = "UPLOAD_FILE_BYTES"
+	UploadChunkBytes   = "UPLOAD_Chunk_BYTES"
+	UploadTextLength   = "UPLOAD_TEXT_LENGTH"
 )

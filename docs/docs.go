@@ -232,9 +232,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/public/file/{id}": {
+        "/v1/public/record/{id}": {
             "delete": {
-                "description": "删除文件",
+                "description": "删除记录",
                 "consumes": [
                     "application/json"
                 ],
@@ -244,11 +244,11 @@ const docTemplate = `{
                 "tags": [
                     "记录"
                 ],
-                "summary": "删除文件",
+                "summary": "删除记录",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "文件 id",
+                        "description": "记录 id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -256,57 +256,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\":true,\"message\":\"文件删除成功\",\"result\":null}",
+                        "description": "{\"success\":true,\"message\":\"记录删除成功\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
                     },
                     "404": {
-                        "description": "{\"success\":false,\"message\":\"未找到文件\",\"result\":null}",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Response"
-                        }
-                    },
-                    "429": {
-                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/public/receive/{code}": {
-            "get": {
-                "description": "接收文件或文本",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "记录"
-                ],
-                "summary": "接收",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "接收码",
-                        "name": "code",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{\"success\":true,\"message\":\"接收成功\",\"result\":{\"id\":\"09cb82b3-20dc-4218-bcfc-dc33ca1ddb6a\",\"code\":\"579186\",\"content\":\"string\",\"isFile\":false,\"downloadTimes\":2,\"expireAt\":\"2023-06-08T21:05:55.2348526+08:00\"}}",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "{\"success\":false,\"message\":\"接收码无效\",\"result\":null}",
+                        "description": "{\"success\":false,\"message\":\"未找到记录\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -335,7 +291,7 @@ const docTemplate = `{
                 "summary": "获取公开的配置项",
                 "responses": {
                     "200": {
-                        "description": "{\"success\":true,\"message\":\"\",\"result\":{\"maxKeepDays\":14,\"maxUploadFileBytes\":100000,\"maxUploadTextLength\":100000,\"maxDownloadTimes\":5}}",
+                        "description": "{\"success\":true,\"message\":\"\",\"result\":{\"keepDays\":5,...}}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -378,9 +334,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/public/text/{id}": {
-            "delete": {
-                "description": "删除文本",
+        "/v1/public/upload/file/merge/{uuid}": {
+            "post": {
+                "description": "将文件切片合并",
                 "consumes": [
                     "application/json"
                 ],
@@ -390,25 +346,34 @@ const docTemplate = `{
                 "tags": [
                     "记录"
                 ],
-                "summary": "删除文本",
+                "summary": "合并文件",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "文本 id",
-                        "name": "id",
+                        "description": "uuid",
+                        "name": "uuid",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "合并信息",
+                        "name": "merge",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.MergeFileForm"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\":true,\"message\":\"文本删除成功\",\"result\":null}",
+                        "description": "{\"success\":true,\"message\":\"文件上传成功\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
                     },
-                    "404": {
-                        "description": "{\"success\":false,\"message\":\"未找到文本\",\"result\":null}",
+                    "400": {
+                        "description": "{\"success\":false,\"message\":\"请求无效或参数错误\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -445,15 +410,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "size",
-                        "name": "size",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "totalChunks",
-                        "name": "totalChunks",
+                        "description": "total",
+                        "name": "total",
                         "in": "formData",
                         "required": true
                     },
@@ -475,6 +433,12 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "{\"success\":true,\"message\":\"\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "{\"success\":false,\"message\":\"请求无效或参数错误\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -525,12 +489,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.Response"
                         }
                     },
-                    "401": {
-                        "description": "{\"success\":false,\"message\":\"请登录后再试\",result:null}",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Response"
-                        }
-                    },
                     "429": {
                         "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
                         "schema": {
@@ -562,6 +520,20 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "v1.MergeFileForm": {
+            "type": "object",
+            "properties": {
+                "downloadTimes": {
+                    "type": "integer"
+                },
+                "filename": {
+                    "type": "string"
+                },
+                "keepDays": {
+                    "type": "integer"
                 }
             }
         },

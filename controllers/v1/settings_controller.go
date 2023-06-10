@@ -19,15 +19,16 @@ import (
 // @Tags 配置项
 // @Accept json
 // @Produce json
-// @Success 200 {object} utils.Response "{"success":true,"message":"","result":{"maxKeepDays":14,"maxUploadFileBytes":100000,"maxUploadTextLength":100000,"maxDownloadTimes":5}}"
+// @Success 200 {object} utils.Response "{"success":true,"message":"","result":{"keepDays":5,...}}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
 // @Router /v1/public/settings [get]
 func GetPublicSettings(ctx *fiber.Ctx) error {
 	return ctx.JSON(utils.Success(fiber.Map{
-		"maxKeepDays":         cache.LoadNumberValue(models.MaxKeepDays),
-		"maxUploadFileBytes":  cache.LoadNumberValue(models.MaxUploadFileBytes),
-		"maxUploadTextLength": cache.LoadNumberValue(models.MaxUploadTextLength),
-		"maxDownloadTimes":    cache.LoadNumberValue(models.MaxDownloadTimes),
+		"keepDays":         cache.LoadNumberValue(models.KeepDays),
+		"uploadFileBytes":  cache.LoadNumberValue(models.UploadFileBytes),
+		"uploadTextLength": cache.LoadNumberValue(models.UploadTextLength),
+		"downloadTimes":    cache.LoadNumberValue(models.DownloadTimes),
+		"uploadChunkBytes": cache.LoadNumberValue(models.UploadChunkBytes),
 	}))
 }
 

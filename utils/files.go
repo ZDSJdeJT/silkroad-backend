@@ -1,12 +1,61 @@
 package utils
 
 import (
+	"bufio"
+	"errors"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"time"
 )
+
+func WriteToFile(filePath string, content string) error {
+	dir := filepath.Dir(filePath)
+	err := os.MkdirAll(dir, 0755)
+	if err != nil {
+		return errors.New("failed to create directory: " + err.Error())
+	}
+
+	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return errors.New("failed to open file: " + err.Error())
+	}
+
+	stat, err := file.Stat()
+	if err == nil && stat.IsDir() {
+		if ferr := file.Close(); ferr != nil {
+			return errors.New("failed to close file: " + ferr.Error())
+		}
+		return errors.New("file path is a directory")
+	}
+
+	writer := bufio.NewWriter(file)
+	_, err = writer.WriteString(content)
+	if err != nil {
+		if werr := writer.Flush(); werr != nil {
+			return errors.New("failed to flush buffer: " + werr.Error())
+		}
+		if ferr := file.Close(); ferr != nil {
+			return errors.New("failed to close file: " + ferr.Error())
+		}
+		return errors.New("failed to write file: " + err.Error())
+	}
+
+	err = writer.Flush()
+	if err != nil {
+		if fcerr := file.Close(); fcerr != nil {
+			return errors.New("failed to close file: " + fcerr.Error())
+		}
+		return errors.New("failed to flush buffer: " + err.Error())
+	}
+
+	if ferr := file.Close(); ferr != nil {
+		return errors.New("failed to close file: " + ferr.Error())
+	}
+
+	return nil
+}
 
 func MergeFiles(chunksPath string, mergedPath string) error {
 	// 确保合并文件所在目录存在
@@ -67,7 +116,7 @@ func MergeFiles(chunksPath string, mergedPath string) error {
 }
 
 func DeleteOldChunks() {
-	dirPath := "./data/chunks"
+	dirPath := "./data/uploads/chunks"
 	dir, err := os.Open(dirPath)
 	if err != nil {
 		log.Printf("Failed to open directory %s: %v", dirPath, err)

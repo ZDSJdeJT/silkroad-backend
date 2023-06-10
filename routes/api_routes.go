@@ -23,8 +23,7 @@ func APIRoutes(app *fiber.App) {
 	publicRoutes.Post("/upload/file/merge/:uuid", limiterMiddleware, v1.MergeFile)
 	publicRoutes.Post("/upload/text", limiterMiddleware, v1.UploadText)
 	publicRoutes.Get("/receive/:code", limiterMiddleware, v1.Receive)
-	publicRoutes.Delete("/text/:id", limiterMiddleware, v1.DeleteText)
-	publicRoutes.Delete("/file/:id", limiterMiddleware, v1.DeleteFile)
+	publicRoutes.Delete("/record/:id", limiterMiddleware, v1.DeleteRecord)
 
 	adminRoutes := v1Routes.Group("/admin", limiterMiddleware)
 	adminRoutes.Post("/login", v1.AdminLogin)

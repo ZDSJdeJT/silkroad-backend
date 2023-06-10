@@ -15,6 +15,15 @@ definitions:
       password:
         type: string
     type: object
+  v1.MergeFileForm:
+    properties:
+      downloadTimes:
+        type: integer
+      filename:
+        type: string
+      keepDays:
+        type: integer
+    type: object
   v1.UploadTextForm:
     properties:
       downloadTimes:
@@ -174,13 +183,13 @@ paths:
       summary: 获取系统信息
       tags:
       - 系统
-  /v1/public/file/{id}:
+  /v1/public/record/{id}:
     delete:
       consumes:
       - application/json
-      description: 删除文件
+      description: 删除记录
       parameters:
-      - description: 文件 id
+      - description: 记录 id
         in: path
         name: id
         required: true
@@ -189,47 +198,18 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success":true,"message":"文件删除成功","result":null}'
+          description: '{"success":true,"message":"记录删除成功","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
         "404":
-          description: '{"success":false,"message":"未找到文件","result":null}'
+          description: '{"success":false,"message":"未找到记录","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
         "429":
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
-      summary: 删除文件
-      tags:
-      - 记录
-  /v1/public/receive/{code}:
-    get:
-      consumes:
-      - application/json
-      description: 接收文件或文本
-      parameters:
-      - description: 接收码
-        in: path
-        name: code
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"success":true,"message":"接收成功","result":{"id":"09cb82b3-20dc-4218-bcfc-dc33ca1ddb6a","code":"579186","content":"string","isFile":false,"downloadTimes":2,"expireAt":"2023-06-08T21:05:55.2348526+08:00"}}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-        "404":
-          description: '{"success":false,"message":"接收码无效","result":null}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-        "429":
-          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-      summary: 接收
+      summary: 删除记录
       tags:
       - 记录
   /v1/public/settings:
@@ -241,7 +221,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success":true,"message":"","result":{"maxKeepDays":14,"maxUploadFileBytes":100000,"maxUploadTextLength":100000,"maxDownloadTimes":5}}'
+          description: '{"success":true,"message":"","result":{"keepDays":5,...}}'
           schema:
             $ref: '#/definitions/utils.Response'
         "429":
@@ -270,35 +250,6 @@ paths:
       summary: 获取系统语言
       tags:
       - 系统
-  /v1/public/text/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: 删除文本
-      parameters:
-      - description: 文本 id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"success":true,"message":"文本删除成功","result":null}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-        "404":
-          description: '{"success":false,"message":"未找到文本","result":null}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-        "429":
-          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-      summary: 删除文本
-      tags:
-      - 记录
   /v1/public/upload/file/{uuid}:
     post:
       consumes:
@@ -310,14 +261,9 @@ paths:
         name: uuid
         required: true
         type: string
-      - description: size
+      - description: total
         in: formData
-        name: size
-        required: true
-        type: string
-      - description: totalChunks
-        in: formData
-        name: totalChunks
+        name: total
         required: true
         type: string
       - description: index
@@ -337,11 +283,50 @@ paths:
           description: '{"success":true,"message":"","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
+        "400":
+          description: '{"success":false,"message":"请求无效或参数错误","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
         "429":
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
       summary: 上传文件切片
+      tags:
+      - 记录
+  /v1/public/upload/file/merge/{uuid}:
+    post:
+      consumes:
+      - application/json
+      description: 将文件切片合并
+      parameters:
+      - description: uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: 合并信息
+        in: body
+        name: merge
+        required: true
+        schema:
+          $ref: '#/definitions/v1.MergeFileForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"文件上传成功","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: '{"success":false,"message":"请求无效或参数错误","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 合并文件
       tags:
       - 记录
   /v1/public/upload/text:
@@ -365,10 +350,6 @@ paths:
             $ref: '#/definitions/utils.Response'
         "400":
           description: '{"success":false,"message":"请求无效或参数错误","result":null}'
-          schema:
-            $ref: '#/definitions/utils.Response'
-        "401":
-          description: '{"success":false,"message":"请登录后再试",result:null}'
           schema:
             $ref: '#/definitions/utils.Response'
         "429":
