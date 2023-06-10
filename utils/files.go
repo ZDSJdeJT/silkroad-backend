@@ -115,7 +115,7 @@ func MergeFiles(chunksPath string, mergedPath string) error {
 	return err
 }
 
-func DeleteOldChunks() {
+func DeleteExpiredChunks() {
 	dirPath := "./data/uploads/chunks"
 	dir, err := os.Open(dirPath)
 	if err != nil {

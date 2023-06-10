@@ -55,10 +55,10 @@ func DeleteExpiredRecords(isFile bool) {
 
 func DeleteExpiredTextRecords() {
 	DeleteExpiredRecords(false)
-	log.Printf("Successfully deleted outdated text records")
+	log.Printf("Successfully deleted expired text records")
 }
 
 func DeleteExpiredFileRecords() {
 	DeleteExpiredRecords(true)
-	log.Printf("Successfully deleted outdated file records")
+	log.Printf("Successfully deleted expired file records")
 }

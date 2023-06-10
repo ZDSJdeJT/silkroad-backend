@@ -314,7 +314,7 @@ func Receive(ctx *fiber.Ctx) error {
 // @Success 200 {object} utils.Response "{"success":true,"message":"记录删除成功","result":null}"
 // @Failure 404 {object} utils.Response "{"success":false,"message":"未找到记录","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
-// @Router /v1/public/record/{id} [delete]
+// @Router /v1/public/records/{id} [delete]
 func DeleteRecord(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 	// 打开数据库连接
@@ -335,5 +335,56 @@ func DeleteRecord(ctx *fiber.Ctx) error {
 		return err
 	}
 	msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "deleteRecordSuccess")
+	return ctx.JSON(utils.SuccessWithMessage(nil, msg))
+}
+
+// DeleteExpiredTextRecords 删除过期文本接口
+//
+// @Summary 删除过期文本
+// @Description 删除过期文本
+// @Tags 记录
+// @Accept json
+// @Produce json
+// @Success 200 {object} utils.Response "{"success":true,"message":"删除过期文本成功","result":null}"
+// @Failure 401 {object} utils.Response "{"success":false,"message":"请登录后再试",result:null}"
+// @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Router /v1/admin/records/expired/text [delete]
+func DeleteExpiredTextRecords(ctx *fiber.Ctx) error {
+	database.DeleteExpiredTextRecords()
+	msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "deleteExpiredTextsRecordsSuccess")
+	return ctx.JSON(utils.SuccessWithMessage(nil, msg))
+}
+
+// DeleteExpiredFileRecords 删除过期文件接口
+//
+// @Summary 删除过期文件
+// @Description 删除过期文件
+// @Tags 记录
+// @Accept json
+// @Produce json
+// @Success 200 {object} utils.Response "{"success":true,"message":"删除过期文件成功","result":null}"
+// @Failure 401 {object} utils.Response "{"success":false,"message":"请登录后再试",result:null}"
+// @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Router /v1/admin/records/expired/file [delete]
+func DeleteExpiredFileRecords(ctx *fiber.Ctx) error {
+	database.DeleteExpiredFileRecords()
+	msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "deleteExpiredFilesRecordsSuccess")
+	return ctx.JSON(utils.SuccessWithMessage(nil, msg))
+}
+
+// DeleteExpiredChunks 删除过期文件切片接口
+//
+// @Summary 删除过期文件切片
+// @Description 删除过期文件切片
+// @Tags 记录
+// @Accept json
+// @Produce json
+// @Success 200 {object} utils.Response "{"success":true,"message":"删除过期文件切片成功","result":null}"
+// @Failure 401 {object} utils.Response "{"success":false,"message":"请登录后再试",result:null}"
+// @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Router /v1/admin/expired/chunks [delete]
+func DeleteExpiredChunks(ctx *fiber.Ctx) error {
+	utils.DeleteExpiredChunks()
+	msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "deleteOldChunksSuccess")
 	return ctx.JSON(utils.SuccessWithMessage(nil, msg))
 }

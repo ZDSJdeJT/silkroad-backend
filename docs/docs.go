@@ -16,6 +16,41 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/v1/admin/expired/chunks": {
+            "delete": {
+                "description": "删除过期文件切片",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "记录"
+                ],
+                "summary": "删除过期文件切片",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"message\":\"删除过期文件切片成功\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "{\"success\":false,\"message\":\"请登录后再试\",result:null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/admin/login": {
             "post": {
                 "description": "管理员使用用户名和密码进行登录",
@@ -78,6 +113,76 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "{\"success\":true,\"message\":\"退出登录成功\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "{\"success\":false,\"message\":\"请登录后再试\",result:null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/admin/records/expired/file": {
+            "delete": {
+                "description": "删除过期文件",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "记录"
+                ],
+                "summary": "删除过期文件",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"message\":\"删除过期文件成功\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "{\"success\":false,\"message\":\"请登录后再试\",result:null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/admin/records/expired/text": {
+            "delete": {
+                "description": "删除过期文本",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "记录"
+                ],
+                "summary": "删除过期文本",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"message\":\"删除过期文本成功\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -232,7 +337,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/public/record/{id}": {
+        "/v1/public/records/{id}": {
             "delete": {
                 "description": "删除记录",
                 "consumes": [

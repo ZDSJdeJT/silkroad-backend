@@ -19,5 +19,8 @@
   "textSettingInvalid": "Length must be between {{.Min}}-{{.Max}}.",
   "numberSettingInvalid": "Value must be between {{.Min}}-{{.Max}}.",
   "uploadFileSuccess": "File uploaded successfully.",
-  "uploadFileTooLarge": "The maximum file size is {{.Max}}."
+  "uploadFileTooLarge": "The maximum file size is {{.Max}}. ",
+  "deleteExpiredTextsRecordsSuccess": "Successfully deleted expired text",
+  "deleteExpiredFilesRecordsSuccess": "Successfully deleted expired files",
+  "deleteOldChunksSuccess": "Successfully deleted expired file chunks"
 }

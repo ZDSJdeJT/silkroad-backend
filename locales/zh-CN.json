@@ -19,5 +19,8 @@
   "textSettingInvalid": "长度必须在 {{.Min}}-{{.Max}} 之间",
   "numberSettingInvalid": "值必须在 {{.Min}}-{{.Max}} 之间",
   "uploadFileSuccess": "文件上传成功",
-  "uploadFileTooLarge": "文件大小最大为 {{.Max}} "
+  "uploadFileTooLarge": "文件大小最大为 {{.Max}} ",
+  "deleteExpiredTextsRecordsSuccess": "删除过期文本成功",
+  "deleteExpiredFilesRecordsSuccess": "删除过期文件成功",
+  "deleteOldChunksSuccess": "删除过期文件切片成功"
 }

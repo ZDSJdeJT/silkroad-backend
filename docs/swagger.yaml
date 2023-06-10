@@ -39,6 +39,29 @@ info:
   title: Silk Road
   version: 1.0.0
 paths:
+  /v1/admin/expired/chunks:
+    delete:
+      consumes:
+      - application/json
+      description: 删除过期文件切片
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"删除过期文件切片成功","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: '{"success":false,"message":"请登录后再试",result:null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 删除过期文件切片
+      tags:
+      - 记录
   /v1/admin/login:
     post:
       consumes:
@@ -92,6 +115,52 @@ paths:
       summary: 管理员退出登录
       tags:
       - 管理员
+  /v1/admin/records/expired/file:
+    delete:
+      consumes:
+      - application/json
+      description: 删除过期文件
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"删除过期文件成功","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: '{"success":false,"message":"请登录后再试",result:null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 删除过期文件
+      tags:
+      - 记录
+  /v1/admin/records/expired/text:
+    delete:
+      consumes:
+      - application/json
+      description: 删除过期文本
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"删除过期文本成功","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: '{"success":false,"message":"请登录后再试",result:null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 删除过期文本
+      tags:
+      - 记录
   /v1/admin/settings:
     get:
       consumes:
@@ -183,7 +252,7 @@ paths:
       summary: 获取系统信息
       tags:
       - 系统
-  /v1/public/record/{id}:
+  /v1/public/records/{id}:
     delete:
       consumes:
       - application/json
