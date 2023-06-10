@@ -135,7 +135,10 @@ func MergeFile(ctx *fiber.Ctx) error {
 
 	// 随机生成一个接收码
 	var count int64
-	db.Model(&models.Record{}).Count(&count)
+	err = db.Model(&models.Record{}).Count(&count).Error
+	if err != nil {
+		return err
+	}
 	code, err := utils.GenerateReceiveCode(int(count))
 	if err != nil {
 		return err
@@ -149,7 +152,10 @@ func MergeFile(ctx *fiber.Ctx) error {
 		DownloadTimes: req.DownloadTimes,
 		ExpireAt:      time.Now().AddDate(0, 0, int(req.KeepDays)),
 	}
-	db.Create(&record)
+	err = db.Create(&record).Error
+	if err != nil {
+		return err
+	}
 
 	msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "uploadFileSuccess")
 	return ctx.JSON(utils.SuccessWithMessage(code, msg))
@@ -216,7 +222,10 @@ func UploadText(ctx *fiber.Ctx) error {
 
 	// 随机生成一个接收码
 	var count int64
-	db.Model(&models.Record{}).Count(&count)
+	err = db.Model(&models.Record{}).Count(&count).Error
+	if err != nil {
+		return err
+	}
 	code, err := utils.GenerateReceiveCode(int(count))
 	if err != nil {
 		return err
@@ -230,7 +239,10 @@ func UploadText(ctx *fiber.Ctx) error {
 		DownloadTimes: req.DownloadTimes,
 		ExpireAt:      time.Now().AddDate(0, 0, int(req.KeepDays)),
 	}
-	db.Create(&record)
+	err = db.Create(&record).Error
+	if err != nil {
+		return err
+	}
 
 	err = utils.WriteToFile(database.DataDir+id.String()+"/"+database.TextFilename, req.Text)
 	if err != nil {
@@ -279,6 +291,7 @@ func Receive(ctx *fiber.Ctx) error {
 	if record.Filename == "" {
 		filename = database.TextFilename
 	} else {
+		ctx.Set(fiber.HeaderContentDisposition, "attachment; filename=\""+record.Filename+"\"")
 		filename = record.Filename
 	}
 	file, err := os.Open(database.DataDir + record.Id.String() + "/" + filename)
@@ -287,7 +300,6 @@ func Receive(ctx *fiber.Ctx) error {
 	}
 	// 设置响应头，指定 Content-Type 和 Content-Disposition
 	ctx.Set(fiber.HeaderContentType, "application/octet-stream")
-	ctx.Set(fiber.HeaderContentDisposition, "attachment; filename=\""+record.Filename+"\"")
 	ctx.Context().SetBodyStreamWriter(func(w *bufio.Writer) {
 		enc := json.NewEncoder(w)
 		msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "receiveSuccess")
