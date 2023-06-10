@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"github.com/gofiber/fiber/v2"
@@ -275,7 +276,7 @@ func Receive(ctx *fiber.Ctx) error {
 	}
 
 	var filename string
-	if len(record.Filename) == 0 {
+	if record.Filename == "" {
 		filename = database.TextFilename
 	} else {
 		filename = record.Filename
@@ -285,21 +286,26 @@ func Receive(ctx *fiber.Ctx) error {
 		return err
 	}
 	// 设置响应头，指定 Content-Type 和 Content-Disposition
-	ctx.Set("Content-Type", "application/octet-stream")
-	ctx.Set("Content-Disposition", "attachment; filename=\""+record.Filename+"\"")
-	// 使用 JSON 编码器将 JSON 数据写入响应体中
-	msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "receiveSuccess")
-	res := utils.SuccessWithMessage(record, msg)
-	if err := json.NewEncoder(ctx.Response().BodyWriter()).Encode(res); err != nil {
-		return err
-	}
-	// 发送文件流到 ResponseWriter 中
-	if _, err := io.Copy(ctx.Response().BodyWriter(), file); err != nil {
-		return err
-	}
-	if err := file.Close(); err != nil {
-		return err
-	}
+	ctx.Set(fiber.HeaderContentType, "application/octet-stream")
+	ctx.Set(fiber.HeaderContentDisposition, "attachment; filename=\""+record.Filename+"\"")
+	ctx.Context().SetBodyStreamWriter(func(w *bufio.Writer) {
+		enc := json.NewEncoder(w)
+		msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "receiveSuccess")
+		res := utils.SuccessWithMessage(record, msg)
+		if err = enc.Encode(res); err != nil {
+			return
+		}
+		if _, err := io.Copy(w, file); err != nil {
+			return
+		}
+		if err := file.Close(); err != nil {
+			return
+		}
+		err := w.Flush()
+		if err != nil {
+			return
+		}
+	})
 	return nil
 }
 
