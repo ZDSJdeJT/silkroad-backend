@@ -332,6 +332,135 @@
                 }
             }
         },
+        "/v1/public/receive/files/{code}": {
+            "get": {
+                "description": "接收文件",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "记录"
+                ],
+                "summary": "接收文件",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "接收码",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "{\"success\":false,\"message\":\"接收码无效\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/public/receive/texts/{code}": {
+            "get": {
+                "description": "接收文本",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "记录"
+                ],
+                "summary": "接收文本",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "接收码",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"message\":\"\",\"result\":\"text\"}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "{\"success\":false,\"message\":\"接收码无效\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/public/records/{code}": {
+            "get": {
+                "description": "根据接收码获取记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "记录"
+                ],
+                "summary": "获取记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "接收码",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"message\":\"\",\"result\":{\"success\":true,\"message\":\"\",\"result\":{\"id\":\"c04ff62e-49ae-4320-9f7f-7ad8582235f4\",\"code\":\"045151\",\"filename\":\"\",\"downloadTimes\":1,\"expireAt\":\"2023-06-12T00:01:28.2012091+08:00\"}}}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "{\"success\":false,\"message\":\"接收码无效\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/public/records/{id}": {
             "delete": {
                 "description": "删除记录",
@@ -434,7 +563,7 @@
                 }
             }
         },
-        "/v1/public/upload/file/merge/{uuid}": {
+        "/v1/public/upload/files/merge/{uuid}": {
             "post": {
                 "description": "将文件切片合并",
                 "consumes": [
@@ -487,7 +616,7 @@
                 }
             }
         },
-        "/v1/public/upload/file/{uuid}": {
+        "/v1/public/upload/files/{uuid}": {
             "post": {
                 "description": "上传文件切片",
                 "consumes": [
@@ -552,7 +681,7 @@
                 }
             }
         },
-        "/v1/public/upload/text": {
+        "/v1/public/upload/texts": {
             "post": {
                 "description": "上传文本",
                 "consumes": [

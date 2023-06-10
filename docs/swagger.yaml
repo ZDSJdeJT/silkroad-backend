@@ -252,6 +252,91 @@ paths:
       summary: 获取系统信息
       tags:
       - 系统
+  /v1/public/receive/files/{code}:
+    get:
+      consumes:
+      - application/json
+      description: 接收文件
+      parameters:
+      - description: 接收码
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: '{"success":false,"message":"接收码无效","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 接收文件
+      tags:
+      - 记录
+  /v1/public/receive/texts/{code}:
+    get:
+      consumes:
+      - application/json
+      description: 接收文本
+      parameters:
+      - description: 接收码
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"","result":"text"}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "404":
+          description: '{"success":false,"message":"接收码无效","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 接收文本
+      tags:
+      - 记录
+  /v1/public/records/{code}:
+    get:
+      consumes:
+      - application/json
+      description: 根据接收码获取记录
+      parameters:
+      - description: 接收码
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"message":"","result":{"success":true,"message":"","result":{"id":"c04ff62e-49ae-4320-9f7f-7ad8582235f4","code":"045151","filename":"","downloadTimes":1,"expireAt":"2023-06-12T00:01:28.2012091+08:00"}}}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "404":
+          description: '{"success":false,"message":"接收码无效","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "429":
+          description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 获取记录
+      tags:
+      - 记录
   /v1/public/records/{id}:
     delete:
       consumes:
@@ -319,7 +404,7 @@ paths:
       summary: 获取系统语言
       tags:
       - 系统
-  /v1/public/upload/file/{uuid}:
+  /v1/public/upload/files/{uuid}:
     post:
       consumes:
       - application/json
@@ -363,7 +448,7 @@ paths:
       summary: 上传文件切片
       tags:
       - 记录
-  /v1/public/upload/file/merge/{uuid}:
+  /v1/public/upload/files/merge/{uuid}:
     post:
       consumes:
       - application/json
@@ -398,7 +483,7 @@ paths:
       summary: 合并文件
       tags:
       - 记录
-  /v1/public/upload/text:
+  /v1/public/upload/texts:
     post:
       consumes:
       - application/json

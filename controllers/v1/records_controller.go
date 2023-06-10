@@ -1,13 +1,11 @@
 package v1
 
 import (
-	"bufio"
 	"encoding/json"
 	"errors"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"io"
 	"os"
 	"silkroad-backend/cache"
 	"silkroad-backend/database"
@@ -32,7 +30,7 @@ import (
 // @Success 200 {object} utils.Response "{"success":true,"message":"","result":null}"
 // @Failure 400 {object} utils.Response "{"success":false,"message":"请求无效或参数错误","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
-// @Router /v1/public/upload/file/{uuid} [post]
+// @Router /v1/public/upload/files/{uuid} [post]
 func UploadFile(ctx *fiber.Ctx) error {
 	totalStr := ctx.FormValue("total")
 	total, err := strconv.ParseUint(totalStr, 10, 64)
@@ -93,7 +91,7 @@ type MergeFileForm struct {
 // @Success 200 {object} utils.Response "{"success":true,"message":"文件上传成功","result":null}"
 // @Failure 400 {object} utils.Response "{"success":false,"message":"请求无效或参数错误","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
-// @Router /v1/public/upload/file/merge/{uuid} [post]
+// @Router /v1/public/upload/files/merge/{uuid} [post]
 func MergeFile(ctx *fiber.Ctx) error {
 	// 从请求体中读取 JSON 数据
 	body := ctx.Body()
@@ -178,7 +176,7 @@ type UploadTextForm struct {
 // @Success 200 {object} utils.Response "{"success":true,"message":"文本上传成功","result":"973758"}"
 // @Failure 400 {object} utils.Response "{"success":false,"message":"请求无效或参数错误","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
-// @Router /v1/public/upload/text [post]
+// @Router /v1/public/upload/texts [post]
 func UploadText(ctx *fiber.Ctx) error {
 	// 从请求体中读取 JSON 数据
 	body := ctx.Body()
@@ -251,74 +249,6 @@ func UploadText(ctx *fiber.Ctx) error {
 
 	msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "uploadTextSuccess")
 	return ctx.JSON(utils.SuccessWithMessage(code, msg))
-}
-
-func Receive(ctx *fiber.Ctx) error {
-	code := ctx.Params("code")
-	// 打开数据库连接
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return err
-	}
-	now := time.Now()
-	var record models.Record
-	if result := db.Where("code = ? AND expire_at >= ?", code, now).First(&record); result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "receiveFail")
-			return ctx.Status(fiber.StatusNotFound).JSON(utils.Fail(msg))
-		}
-		return err
-	}
-
-	if record.DownloadTimes != 0 {
-		if record.DownloadTimes == 1 {
-			// 逻辑删除
-			// 定时任务会进行物理删除
-			expireAt := record.ExpireAt
-			if err := db.Model(&record).Select("expire_at").Update("expire_at", now).Error; err != nil {
-				return err
-			}
-			record.ExpireAt = expireAt
-		} else {
-			if err := db.Model(&record).Select("download_times").Update("download_times", record.DownloadTimes-1).Error; err != nil {
-				return err
-			}
-			record.DownloadTimes++
-		}
-	}
-
-	var filename string
-	if record.Filename == "" {
-		filename = database.TextFilename
-	} else {
-		ctx.Set(fiber.HeaderContentDisposition, "attachment; filename=\""+record.Filename+"\"")
-		filename = record.Filename
-	}
-	file, err := os.Open(database.DataDir + record.Id.String() + "/" + filename)
-	if err != nil {
-		return err
-	}
-	// 设置响应头，指定 Content-Type 和 Content-Disposition
-	ctx.Set(fiber.HeaderContentType, "application/octet-stream")
-	ctx.Context().SetBodyStreamWriter(func(w *bufio.Writer) {
-		enc := json.NewEncoder(w)
-		msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "receiveSuccess")
-		res := utils.SuccessWithMessage(record, msg)
-		if err = enc.Encode(res); err != nil {
-			return
-		}
-		if _, err := io.Copy(w, file); err != nil {
-			return
-		}
-		if err := file.Close(); err != nil {
-			return
-		}
-		err := w.Flush()
-		if err != nil {
-			return
-		}
-	})
-	return nil
 }
 
 // DeleteRecord 删除记录接口
@@ -405,4 +335,129 @@ func DeleteExpiredChunks(ctx *fiber.Ctx) error {
 	utils.DeleteExpiredChunks()
 	msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "deleteOldChunksSuccess")
 	return ctx.JSON(utils.SuccessWithMessage(nil, msg))
+}
+
+// GetRecordByCode 获取记录接口
+//
+// @Summary 获取记录
+// @Description 根据接收码获取记录
+// @Tags 记录
+// @Accept json
+// @Produce json
+// @Param code path string true "接收码"
+// @Success 200 {object} utils.Response "{"success":true,"message":"","result":{"success":true,"message":"","result":{"id":"c04ff62e-49ae-4320-9f7f-7ad8582235f4","code":"045151","filename":"","downloadTimes":1,"expireAt":"2023-06-12T00:01:28.2012091+08:00"}}}"
+// @Failure 404 {object} utils.Response "{"success":false,"message":"接收码无效","result":null}"
+// @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Router /v1/public/records/{code} [get]
+func GetRecordByCode(ctx *fiber.Ctx) error {
+	code := ctx.Params("code")
+	// 打开数据库连接
+	db, err := database.OpenDBConnection()
+	if err != nil {
+		return err
+	}
+	var record models.Record
+	if result := db.Where("code = ? AND expire_at >= ?", code, time.Now()).First(&record); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "receiveFail")
+			return ctx.Status(fiber.StatusNotFound).JSON(utils.Fail(msg))
+		}
+		return err
+	}
+	return ctx.JSON(utils.Success(record))
+}
+
+// ReceiveText 接收文本接口
+//
+// @Summary 接收文本
+// @Description 接收文本
+// @Tags 记录
+// @Accept json
+// @Produce json
+// @Param code path string true "接收码"
+// @Success 200 {object} utils.Response "{"success":true,"message":"","result":"text"}"
+// @Failure 404 {object} utils.Response "{"success":false,"message":"接收码无效","result":null}"
+// @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Router /v1/public/receive/texts/{code} [get]
+func ReceiveText(ctx *fiber.Ctx) error {
+	code := ctx.Params("code")
+	// 打开数据库连接
+	db, err := database.OpenDBConnection()
+	if err != nil {
+		return err
+	}
+	now := time.Now()
+	var record models.Record
+	if result := db.Where("code = ? AND expire_at >= ? AND filename = \"\"", code, now).First(&record); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "receiveFail")
+			return ctx.Status(fiber.StatusNotFound).JSON(utils.Fail(msg))
+		}
+		return err
+	}
+
+	if record.DownloadTimes != 0 {
+		if record.DownloadTimes == 1 {
+			// 逻辑删除
+			// 定时任务会进行物理删除
+			if err := db.Model(&record).Select("expire_at").Update("expire_at", now).Error; err != nil {
+				return err
+			}
+		} else {
+			if err := db.Model(&record).Select("download_times").Update("download_times", record.DownloadTimes-1).Error; err != nil {
+				return err
+			}
+		}
+	}
+
+	text, err := os.ReadFile(database.DataDir + record.Id.String() + "/" + database.TextFilename)
+	msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "receiveSuccess")
+	return ctx.JSON(utils.SuccessWithMessage(string(text), msg))
+}
+
+// ReceiveFile 接收文件接口
+//
+// @Summary 接收文件
+// @Description 接收文件
+// @Tags 记录
+// @Accept json
+// @Produce json
+// @Param code path string true "接收码"
+// @Success 200
+// @Failure 404 {object} utils.Response "{"success":false,"message":"接收码无效","result":null}"
+// @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Router /v1/public/receive/files/{code} [get]
+func ReceiveFile(ctx *fiber.Ctx) error {
+	code := ctx.Params("code")
+	// 打开数据库连接
+	db, err := database.OpenDBConnection()
+	if err != nil {
+		return err
+	}
+	now := time.Now()
+	var record models.Record
+	if result := db.Where("code = ? AND expire_at >= ?", code, now).First(&record); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "receiveFail")
+			return ctx.Status(fiber.StatusNotFound).JSON(utils.Fail(msg))
+		}
+		return err
+	}
+
+	if record.DownloadTimes != 0 {
+		if record.DownloadTimes == 1 {
+			// 逻辑删除
+			// 定时任务会进行物理删除
+			if err := db.Model(&record).Select("expire_at").Update("expire_at", now).Error; err != nil {
+				return err
+			}
+		} else {
+			if err := db.Model(&record).Select("download_times").Update("download_times", record.DownloadTimes-1).Error; err != nil {
+				return err
+			}
+		}
+	}
+	ctx.Set(fiber.HeaderContentType, "application/octet-stream")
+	ctx.Set(fiber.HeaderContentDisposition, "attachment; filename=\""+record.Filename+"\"")
+	return ctx.SendFile(database.DataDir + record.Id.String() + "/" + record.Filename)
 }
