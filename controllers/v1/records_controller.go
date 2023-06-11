@@ -83,7 +83,7 @@ func UploadFile(ctx *fiber.Ctx) error {
 		}) + "MB"
 		return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail(msg))
 	}
-	if index*uploadChunkBytes+chunkSize > uploadFileBytes {
+	if maxTotal-index == 1 && index*uploadChunkBytes+chunkSize > uploadFileBytes {
 		msg := i18n.GetLocalizedMessageWithTemplate(ctx.Locals("lang").(string), "uploadFileTooLarge", map[string]interface{}{
 			"Max": uploadFileBytes / 1048576,
 		}) + "MB"
