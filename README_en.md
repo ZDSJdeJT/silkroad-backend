@@ -21,9 +21,9 @@ If you have any suggestions or find any issues with the project, please create a
 
 1. Create a .env.production file based on .env.sample.
 2. `docker build -t silkroad .`
-3. `docker run -d --name silkroad -p \<port\>:\<port\> silkroad`
-4. Access http://\<ip\>:\<port\>/admin/login to change the administrator password (the initial administrator name and password are both `admin`)
-5. Access http://\<ip\>:\<port\> to use Silk Road
+3. `docker run -d --name silkroad -p <port>:4000 silkroad`
+4. Access http://<ip>:<port>/admin/login to change the administrator password (the initial administrator name and password are both `admin`)
+5. Access http://<ip>:<port> to use Silk Road
 
 ## 许可证
 

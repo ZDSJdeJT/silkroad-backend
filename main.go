@@ -28,6 +28,7 @@ func main() {
 		JSONEncoder:       json.Marshal,
 		JSONDecoder:       json.Unmarshal,
 		EnablePrintRoutes: true,
+		AppName:           utils.APPName,
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			// Status code defaults to 500
 			code := fiber.StatusInternalServerError
@@ -87,7 +88,7 @@ func main() {
 
 	cron.Start()
 
-	if err := app.Listen(":" + os.Getenv(utils.APPPort)); err != nil {
+	if err := app.Listen(":" + utils.APPPort); err != nil {
 		log.Fatalf("Error starting: %s.", err)
 	}
 }

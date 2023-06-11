@@ -23,9 +23,9 @@
 
 1. 仿照 .env.sample 创建 .env.production
 2. `docker build -t silkroad .`
-3. `docker run -d --name silkroad -p \<port\>:\<port\> silkroad`
-4. 访问 http://\<ip\>:\<port\>/admin/login 地址修改管理员密码（管理员名称和密码初始均为`admin`）
-5. 访问 http://\<ip\>:\<port\> 进行使用
+3. `docker run -d --name silkroad -p <port>:4000 silkroad`
+4. 访问 http://<ip>:<port>/admin/login 地址修改管理员密码（管理员名称和密码初始均为`admin`）
+5. 访问 http://<ip>:<port> 进行使用
 
 ## 许可证
 

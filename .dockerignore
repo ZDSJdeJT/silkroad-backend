@@ -19,6 +19,7 @@ vendor/
 **/*.raw
 **/*.bat
 **/*.sh
+**/*.md
 
 Dockerfile
 

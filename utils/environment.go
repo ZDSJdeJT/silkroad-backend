@@ -8,22 +8,21 @@ import (
 
 const (
 	AppMode          = "APP_MODE"
-	APPPort          = "APP_PORT"
-	APPName          = "APP_NAME"
-	APPVersion       = "APP_VERSION"
-	DatabaseDSN      = "DATABASE_DSN"
 	JWTSecretKey     = "JWT_SECRET_KEY"
 	JWTExpireMinutes = "JWT_EXPIRE_MINUTES"
 )
 
 var initialEnvVars = []string{
-	APPPort,
-	APPName,
-	APPVersion,
-	DatabaseDSN,
 	JWTSecretKey,
 	JWTExpireMinutes,
 }
+
+const (
+	APPName     = "Silk Road"
+	APPVersion  = "1.0.0"
+	APPPort     = "4000"
+	DatabaseDSN = "./data/database/sqlite.db"
+)
 
 func CheckEnvVarsExist() error {
 	var missingVars []string

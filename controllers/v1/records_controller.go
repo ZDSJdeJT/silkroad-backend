@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"math"
 	"os"
 	"silkroad-backend/cache"
 	"silkroad-backend/database"
@@ -63,11 +64,17 @@ func UploadFile(ctx *fiber.Ctx) error {
 		msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "badRequest")
 		return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail(msg))
 	}
+	uploadChunkBytes := cache.LoadNumberValue(models.UploadChunkBytes)
+	if uint64(math.Ceil(float64(uploadFileBytes)/float64(uploadChunkBytes))) < total {
+		msg := i18n.GetLocalizedMessageWithTemplate(ctx.Locals("lang").(string), "uploadFileTooLarge", map[string]interface{}{
+			"Max": uploadFileBytes / 1048576,
+		}) + "MB"
+		return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail(msg))
+	}
 	chunk, err := ctx.FormFile("chunk")
 	if err != nil {
 		return err
 	}
-	uploadChunkBytes := cache.LoadNumberValue(models.UploadChunkBytes)
 	chunkSize := uint64(chunk.Size)
 	if chunkSize > uploadChunkBytes || index*uploadChunkBytes+chunkSize > uploadFileBytes {
 		msg := i18n.GetLocalizedMessageWithTemplate(ctx.Locals("lang").(string), "uploadFileTooLarge", map[string]interface{}{

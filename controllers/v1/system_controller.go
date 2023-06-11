@@ -2,7 +2,6 @@ package v1
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"os"
 	"silkroad-backend/i18n"
 	"silkroad-backend/utils"
 )
@@ -20,8 +19,8 @@ import (
 // @Router /v1/admin/system/info [get]
 func GetSystemInfo(ctx *fiber.Ctx) error {
 	res := utils.Success(fiber.Map{
-		"appName":    os.Getenv("APP_NAME"),
-		"appVersion": os.Getenv("APP_VERSION"),
+		"appName":    utils.APPName,
+		"appVersion": utils.APPVersion,
 	})
 	return ctx.JSON(res)
 }

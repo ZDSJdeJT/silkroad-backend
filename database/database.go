@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"os"
 	"silkroad-backend/models"
 	"silkroad-backend/utils"
 )
@@ -57,7 +56,7 @@ func initSettings(db *gorm.DB) ([]models.Setting, error) {
 }
 
 func OpenDBConnection() (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open(os.Getenv("DATABASE_DSN")), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(utils.DatabaseDSN), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
