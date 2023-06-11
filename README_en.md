@@ -20,8 +20,8 @@ If you have any suggestions or find any issues with the project, please create a
 ## 部署
 
 1. Create a .env.production file based on .env.sample.
-2. Build the Silk Road Docker image with docker build -t silkroad .
-3. Run the Silk Road Docker container with docker run -d --name silkroad -p \<port\>:\<port\> silkroad
+2. `docker build -t silkroad .`
+3. `docker run -d --name silkroad -p \<port\>:\<port\> silkroad`
 4. Access http://\<ip\>:\<port\>/admin/login to change the administrator password (the initial administrator name and password are both `admin`)
 5. Access http://\<ip\>:\<port\> to use Silk Road
 
