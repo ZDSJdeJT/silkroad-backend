@@ -24,14 +24,29 @@ import (
 // @Accept json
 // @Produce json
 // @Param uuid path string true "uuid"
-// @Param total formData string true "total"
-// @Param index formData string true "index"
-// @Param chunk formData file true "chunk"
+// @Param size formData string true "文件总大小"
+// @Param total formData string true "文件总切片数"
+// @Param index formData string true "文件切片索引"
+// @Param chunk formData file true "文件切片"
 // @Success 200 {object} utils.Response "{"success":true,"message":"","result":null}"
 // @Failure 400 {object} utils.Response "{"success":false,"message":"请求无效或参数错误","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Failure 500 {object} utils.Response "{"success":false,"message":"服务器错误","result":null}"
 // @Router /v1/public/upload/files/{uuid} [post]
 func UploadFile(ctx *fiber.Ctx) error {
+	sizeStr := ctx.FormValue("size")
+	size, err := strconv.ParseUint(sizeStr, 10, 64)
+	if err != nil {
+		msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "badRequest")
+		return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail(msg))
+	}
+	uploadFileBytes := cache.LoadNumberValue(models.UploadFileBytes)
+	if size > uploadFileBytes {
+		msg := i18n.GetLocalizedMessageWithTemplate(ctx.Locals("lang").(string), "uploadFileTooLarge", map[string]interface{}{
+			"Max": uploadFileBytes / 1048576,
+		}) + "MB"
+		return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail(msg))
+	}
 	totalStr := ctx.FormValue("total")
 	total, err := strconv.ParseUint(totalStr, 10, 64)
 	if err != nil {
@@ -52,7 +67,6 @@ func UploadFile(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	uploadFileBytes := cache.LoadNumberValue(models.UploadFileBytes)
 	uploadChunkBytes := cache.LoadNumberValue(models.UploadChunkBytes)
 	chunkSize := uint64(chunk.Size)
 	if chunkSize > uploadChunkBytes || index*uploadChunkBytes+chunkSize > uploadFileBytes {
@@ -91,6 +105,7 @@ type MergeFileForm struct {
 // @Success 200 {object} utils.Response "{"success":true,"message":"文件上传成功","result":null}"
 // @Failure 400 {object} utils.Response "{"success":false,"message":"请求无效或参数错误","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Failure 500 {object} utils.Response "{"success":false,"message":"服务器错误","result":null}"
 // @Router /v1/public/upload/files/merge/{uuid} [post]
 func MergeFile(ctx *fiber.Ctx) error {
 	// 从请求体中读取 JSON 数据
@@ -115,6 +130,11 @@ func MergeFile(ctx *fiber.Ctx) error {
 		msg := i18n.GetLocalizedMessageWithTemplate(ctx.Locals("lang").(string), "maxDownloadTimesInvalid", map[string]interface{}{
 			"DownloadTimes": maxDownloadTimes,
 		})
+		return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail(msg))
+	}
+
+	if req.Filename == "" {
+		msg := i18n.GetLocalizedMessage(ctx.Locals("lang").(string), "badRequest")
 		return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail(msg))
 	}
 
@@ -176,6 +196,7 @@ type UploadTextForm struct {
 // @Success 200 {object} utils.Response "{"success":true,"message":"文本上传成功","result":"973758"}"
 // @Failure 400 {object} utils.Response "{"success":false,"message":"请求无效或参数错误","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Failure 500 {object} utils.Response "{"success":false,"message":"服务器错误","result":null}"
 // @Router /v1/public/upload/texts [post]
 func UploadText(ctx *fiber.Ctx) error {
 	// 从请求体中读取 JSON 数据
@@ -262,6 +283,7 @@ func UploadText(ctx *fiber.Ctx) error {
 // @Success 200 {object} utils.Response "{"success":true,"message":"记录删除成功","result":null}"
 // @Failure 404 {object} utils.Response "{"success":false,"message":"未找到记录","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Failure 500 {object} utils.Response "{"success":false,"message":"服务器错误","result":null}"
 // @Router /v1/public/records/{id} [delete]
 func DeleteRecord(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
@@ -348,6 +370,7 @@ func DeleteExpiredChunks(ctx *fiber.Ctx) error {
 // @Success 200 {object} utils.Response "{"success":true,"message":"","result":{"success":true,"message":"","result":{"id":"c04ff62e-49ae-4320-9f7f-7ad8582235f4","code":"045151","filename":"","downloadTimes":1,"expireAt":"2023-06-12T00:01:28.2012091+08:00"}}}"
 // @Failure 404 {object} utils.Response "{"success":false,"message":"接收码无效","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Failure 500 {object} utils.Response "{"success":false,"message":"服务器错误","result":null}"
 // @Router /v1/public/records/{code} [get]
 func GetRecordByCode(ctx *fiber.Ctx) error {
 	code := ctx.Params("code")
@@ -378,6 +401,7 @@ func GetRecordByCode(ctx *fiber.Ctx) error {
 // @Success 200 {object} utils.Response "{"success":true,"message":"","result":"text"}"
 // @Failure 404 {object} utils.Response "{"success":false,"message":"接收码无效","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Failure 500 {object} utils.Response "{"success":false,"message":"服务器错误","result":null}"
 // @Router /v1/public/receive/texts/{code} [get]
 func ReceiveText(ctx *fiber.Ctx) error {
 	code := ctx.Params("code")
@@ -426,6 +450,7 @@ func ReceiveText(ctx *fiber.Ctx) error {
 // @Success 200
 // @Failure 404 {object} utils.Response "{"success":false,"message":"接收码无效","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Failure 500 {object} utils.Response "{"success":false,"message":"服务器错误","result":null}"
 // @Router /v1/public/receive/files/{code} [get]
 func ReceiveFile(ctx *fiber.Ctx) error {
 	code := ctx.Params("code")

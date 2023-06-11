@@ -42,6 +42,7 @@ func GetPublicSettings(ctx *fiber.Ctx) error {
 // @Success 200 {object} utils.Response "{"success":true,"message":"","result":[{"key":"ADMIN_NAME","textValue":"admin","numberValue":0,"isText":true,"min":5,"max":20,"label":{"en-US":"Admin name","zh-CN":"管理员名称"}},{...}]}"
 // @Failure 401 {object} utils.Response "{"success":false,"message":"请登录后再试",result:null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Failure 500 {object} utils.Response "{"success":false,"message":"服务器错误","result":null}"
 // @Router /v1/admin/settings [get]
 func GetSettings(ctx *fiber.Ctx) error {
 	// 打开数据库连接
@@ -81,6 +82,7 @@ func GetSettings(ctx *fiber.Ctx) error {
 // @Failure 401 {object} utils.Response "{"success":false,"message":"请登录后再试",result:null}"
 // @Failure 404 {object} utils.Response "{"success":false,"message":"未找到配置项","result":null}"
 // @Failure 429 {object} utils.Response "{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}"
+// @Failure 500 {object} utils.Response "{"success":false,"message":"服务器错误","result":null}"
 // @Router /v1/admin/settings/{key} [put]
 func UpdateSetting(ctx *fiber.Ctx) error {
 	// 打开数据库连接

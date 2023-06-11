@@ -93,6 +93,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
+                    },
+                    "500": {
+                        "description": "{\"success\":false,\"message\":\"服务器错误\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
                     }
                 }
             }
@@ -125,6 +131,12 @@ const docTemplate = `{
                     },
                     "429": {
                         "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"success\":false,\"message\":\"服务器错误\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -233,6 +245,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
+                    },
+                    "500": {
+                        "description": "{\"success\":false,\"message\":\"服务器错误\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
                     }
                 }
             }
@@ -295,6 +313,12 @@ const docTemplate = `{
                     },
                     "429": {
                         "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"success\":false,\"message\":\"服务器错误\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -374,6 +398,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
+                    },
+                    "500": {
+                        "description": "{\"success\":false,\"message\":\"服务器错误\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
                     }
                 }
             }
@@ -415,6 +445,12 @@ const docTemplate = `{
                     },
                     "429": {
                         "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"success\":false,\"message\":\"服务器错误\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -462,6 +498,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
+                    },
+                    "500": {
+                        "description": "{\"success\":false,\"message\":\"服务器错误\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
                     }
                 }
             }
@@ -503,6 +545,12 @@ const docTemplate = `{
                     },
                     "429": {
                         "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"success\":false,\"message\":\"服务器错误\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -617,6 +665,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
+                    },
+                    "500": {
+                        "description": "{\"success\":false,\"message\":\"服务器错误\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
                     }
                 }
             }
@@ -644,21 +698,28 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "total",
+                        "description": "文件总大小",
+                        "name": "size",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "文件总切片数",
                         "name": "total",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "index",
+                        "description": "文件切片索引",
                         "name": "index",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "file",
-                        "description": "chunk",
+                        "description": "文件切片",
                         "name": "chunk",
                         "in": "formData",
                         "required": true
@@ -679,6 +740,12 @@ const docTemplate = `{
                     },
                     "429": {
                         "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"success\":false,\"message\":\"服务器错误\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -725,6 +792,12 @@ const docTemplate = `{
                     },
                     "429": {
                         "description": "{\"success\":false,\"message\":\"请求过于频繁，请稍后再试！\",\"result\":null}",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"success\":false,\"message\":\"服务器错误\",\"result\":null}",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }

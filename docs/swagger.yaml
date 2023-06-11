@@ -89,6 +89,10 @@ paths:
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
+        "500":
+          description: '{"success":false,"message":"服务器错误","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
       summary: 管理员登录
       tags:
       - 管理员
@@ -110,6 +114,10 @@ paths:
             $ref: '#/definitions/utils.Response'
         "429":
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: '{"success":false,"message":"服务器错误","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
       summary: 管理员退出登录
@@ -182,6 +190,10 @@ paths:
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
+        "500":
+          description: '{"success":false,"message":"服务器错误","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
       summary: 获取所有配置项
       tags:
       - 配置项
@@ -223,6 +235,10 @@ paths:
             $ref: '#/definitions/utils.Response'
         "429":
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: '{"success":false,"message":"服务器错误","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
       summary: 更新配置项
@@ -276,6 +292,10 @@ paths:
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
+        "500":
+          description: '{"success":false,"message":"服务器错误","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
       summary: 接收文件
       tags:
       - 记录
@@ -303,6 +323,10 @@ paths:
             $ref: '#/definitions/utils.Response'
         "429":
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: '{"success":false,"message":"服务器错误","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
       summary: 接收文本
@@ -334,6 +358,10 @@ paths:
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
+        "500":
+          description: '{"success":false,"message":"服务器错误","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
       summary: 获取记录
       tags:
       - 记录
@@ -361,6 +389,10 @@ paths:
             $ref: '#/definitions/utils.Response'
         "429":
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: '{"success":false,"message":"服务器错误","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
       summary: 删除记录
@@ -415,17 +447,22 @@ paths:
         name: uuid
         required: true
         type: string
-      - description: total
+      - description: 文件总大小
+        in: formData
+        name: size
+        required: true
+        type: string
+      - description: 文件总切片数
         in: formData
         name: total
         required: true
         type: string
-      - description: index
+      - description: 文件切片索引
         in: formData
         name: index
         required: true
         type: string
-      - description: chunk
+      - description: 文件切片
         in: formData
         name: chunk
         required: true
@@ -443,6 +480,10 @@ paths:
             $ref: '#/definitions/utils.Response'
         "429":
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: '{"success":false,"message":"服务器错误","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
       summary: 上传文件切片
@@ -480,6 +521,10 @@ paths:
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
+        "500":
+          description: '{"success":false,"message":"服务器错误","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
       summary: 合并文件
       tags:
       - 记录
@@ -508,6 +553,10 @@ paths:
             $ref: '#/definitions/utils.Response'
         "429":
           description: '{"success":false,"message":"请求过于频繁，请稍后再试！","result":null}'
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: '{"success":false,"message":"服务器错误","result":null}'
           schema:
             $ref: '#/definitions/utils.Response'
       summary: 上传文本
