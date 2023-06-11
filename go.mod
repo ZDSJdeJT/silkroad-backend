@@ -13,6 +13,7 @@ require (
 	github.com/swaggo/swag v1.16.1
 	golang.org/x/crypto v0.9.0
 	golang.org/x/net v0.10.0
+	golang.org/x/text v0.9.0
 	gorm.io/driver/sqlite v1.4.3
 	gorm.io/gorm v1.25.1
 )
@@ -43,7 +44,6 @@ require (
 	github.com/valyala/fasthttp v1.47.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/tools v0.9.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
