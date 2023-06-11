@@ -153,3 +153,19 @@ func DeleteExpiredChunks() {
 	}
 	log.Printf("Successfully deleted old chunks")
 }
+
+func GetDirectorySize(path string) (int64, error) {
+	var size int64
+	err := filepath.Walk(path, func(filePath string, fileInfo os.FileInfo, err error) error {
+		if !fileInfo.IsDir() {
+			size += fileInfo.Size()
+		}
+		return nil
+	})
+
+	if err != nil {
+		return 0, err
+	}
+
+	return size, nil
+}

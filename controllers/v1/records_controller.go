@@ -65,7 +65,8 @@ func UploadFile(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail(msg))
 	}
 	uploadChunkBytes := cache.LoadNumberValue(models.UploadChunkBytes)
-	if uint64(math.Ceil(float64(uploadFileBytes)/float64(uploadChunkBytes))) < total {
+	maxTotal := uint64(math.Ceil(float64(uploadFileBytes) / float64(uploadChunkBytes)))
+	if maxTotal < total {
 		msg := i18n.GetLocalizedMessageWithTemplate(ctx.Locals("lang").(string), "uploadFileTooLarge", map[string]interface{}{
 			"Max": uploadFileBytes / 1048576,
 		}) + "MB"
@@ -76,7 +77,13 @@ func UploadFile(ctx *fiber.Ctx) error {
 		return err
 	}
 	chunkSize := uint64(chunk.Size)
-	if chunkSize > uploadChunkBytes || index*uploadChunkBytes+chunkSize > uploadFileBytes {
+	if chunkSize > uploadChunkBytes {
+		msg := i18n.GetLocalizedMessageWithTemplate(ctx.Locals("lang").(string), "uploadFileTooLarge", map[string]interface{}{
+			"Max": uploadFileBytes / 1048576,
+		}) + "MB"
+		return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail(msg))
+	}
+	if index*uploadChunkBytes+chunkSize > uploadFileBytes {
 		msg := i18n.GetLocalizedMessageWithTemplate(ctx.Locals("lang").(string), "uploadFileTooLarge", map[string]interface{}{
 			"Max": uploadFileBytes / 1048576,
 		}) + "MB"
@@ -146,8 +153,21 @@ func MergeFile(ctx *fiber.Ctx) error {
 	}
 
 	id := ctx.Params("uuid")
+	chunkDir := database.ChunksDir + id
+	chunkDirSize, err := utils.GetDirectorySize(chunkDir)
+	if err != nil {
+		return err
+	}
+	uploadFileBytes := cache.LoadNumberValue(models.UploadFileBytes)
+	if uint64(chunkDirSize) > uploadFileBytes {
+		msg := i18n.GetLocalizedMessageWithTemplate(ctx.Locals("lang").(string), "uploadFileTooLarge", map[string]interface{}{
+			"Max": uploadFileBytes / 1048576,
+		}) + "MB"
+		return ctx.Status(fiber.StatusBadRequest).JSON(utils.Fail(msg))
+	}
+
 	recordId := uuid.New()
-	err = utils.MergeFiles(database.ChunksDir+id, database.DataDir+recordId.String()+"/"+req.Filename)
+	err = utils.MergeFiles(chunkDir, database.DataDir+recordId.String()+"/"+req.Filename)
 	if err != nil {
 		return err
 	}
